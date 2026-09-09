@@ -1,0 +1,32 @@
+schema_version = 1
+
+[package]
+name = "coreutils"
+version = "9.6"
+release = 1
+epoch = 0
+description = "GNU core system utilities (file, text, and shell utilities)"
+license = "GPL-3.0-or-later"
+channel = "system"
+arch = "amd64"
+
+dependencies = [
+    "virtual/libc"
+]
+
+provides = [
+    "virtual/coreutils"
+]
+
+[source]
+url = "https://ftp.gnu.org/gnu/coreutils/coreutils-9.6.tar.xz"
+sha256 = "91a806a099a531e2d7831dcab9b76313b28b7e283abeb2f592d3c11ff056f4e7"
+
+[build]
+inherit = ["autotools"]
+
+[build.args]
+configure_args = "--prefix=/usr --enable-install-program=hostname --enable-no-install-program=kill,uptime"
+
+[build.payload]
+default = "remaining"

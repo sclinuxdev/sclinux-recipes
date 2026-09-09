@@ -1,0 +1,67 @@
+schema_version = 1
+
+[package]
+name = "glibc"
+version = "2.41"
+release = 1
+epoch = 0
+description = "GNU C Library implementation"
+license = "LGPL-2.1-or-later AND GPL-3.0-or-later"
+channel = "system"
+arch = "amd64"
+
+dependencies = [
+    "virtual/filesystem",
+    "glibc-libs = 2.41-1"
+]
+
+provides = [
+    "virtual/libc"
+]
+
+[source]
+url = "https://ftp.gnu.org/gnu/glibc/glibc-2.41.tar.xz"
+sha256 = "8ab580e0cf1244d470559f93db7168936b8e88bb003923c72aa0dfa77cb546c2"
+
+[build]
+inherit = ["autotools"]
+
+[build.args]
+configure_args = "--prefix=/usr --enable-kernel=5.4 --enable-stack-protector=strong --disable-profile --disable-werror"
+
+[build.payload]
+default = "remaining"
+
+[[subpackages]]
+name = "glibc-libs"
+description = "GNU C Library runtime shared libraries and dynamic linker"
+license = "LGPL-2.1-or-later"
+
+provides = [
+    "virtual/libc",
+    "so:libc.so.6",
+    "so:ld-linux-x86-64.so.2"
+]
+
+[subpackages.payload]
+files = [
+    "usr/lib/*.so.*",
+    "usr/lib/ld-*.so*"
+]
+
+[[subpackages]]
+name = "glibc-dev"
+description = "GNU C Library headers and static development libraries"
+license = "LGPL-2.1-or-later"
+
+dependencies = [
+    "glibc-libs = 2.41-1"
+]
+
+[subpackages.payload]
+files = [
+    "usr/include/**",
+    "usr/lib/*.so",
+    "usr/lib/*.o",
+    "usr/lib/*.a"
+]

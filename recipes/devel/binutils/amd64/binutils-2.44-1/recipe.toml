@@ -1,0 +1,66 @@
+schema_version = 1
+
+[package]
+name = "binutils"
+version = "2.44"
+release = 1
+epoch = 0
+description = "GNU binary utilities (assembler, linker, and binary inspection tools)"
+license = "GPL-3.0-or-later"
+channel = "system"
+arch = "amd64"
+
+dependencies = [
+    "virtual/libc",
+    "binutils-libs = 2.44-1"
+]
+
+provides = [
+    "virtual/binutils"
+]
+
+[source]
+url = "https://ftp.gnu.org/gnu/binutils/binutils-2.44.tar.xz"
+sha256 = "ce2635955a5b512c1b471542f7ae8e44280b263309a63319087ae70f2f0b1a0e"
+
+[build]
+inherit = ["autotools"]
+
+[build.args]
+configure_args = "--prefix=/usr --enable-gold --enable-ld=default --enable-plugins --enable-shared --disable-werror --with-system-zlib"
+
+[build.payload]
+default = "remaining"
+
+[[subpackages]]
+name = "binutils-libs"
+description = "BFD and opcodes shared libraries"
+license = "GPL-3.0-or-later"
+
+dependencies = [
+    "virtual/libc"
+]
+
+[subpackages.payload]
+files = [
+    "usr/lib/libbfd-*.so",
+    "usr/lib/libopcodes-*.so",
+    "usr/lib/libctf*.so.*"
+]
+
+[[subpackages]]
+name = "binutils-dev"
+description = "BFD development headers and link libraries"
+license = "GPL-3.0-or-later"
+
+dependencies = [
+    "binutils-libs = 2.44-1"
+]
+
+[subpackages.payload]
+files = [
+    "usr/include/**",
+    "usr/lib/*.a",
+    "usr/lib/libbfd.so",
+    "usr/lib/libopcodes.so"
+]

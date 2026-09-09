@@ -1,0 +1,63 @@
+schema_version = 1
+
+[package]
+name = "filesystem"
+version = "1.0.0"
+release = 1
+epoch = 0
+description = "Core Linux filesystem hierarchy standard (FHS) skeleton and symlinks"
+license = "BSD-2-Clause"
+channel = "system"
+arch = "any"
+
+provides = [
+    "virtual/filesystem"
+]
+
+[install]
+directories = [
+    { path = "boot" },
+    { path = "dev" },
+    { path = "etc" },
+    { path = "home" },
+    { path = "mnt" },
+    { path = "opt" },
+    { path = "proc" },
+    { path = "root", mode = 448 },
+    { path = "run" },
+    { path = "sys" },
+    { path = "tmp", mode = 1023 },
+    { path = "usr" },
+    { path = "usr/bin" },
+    { path = "usr/include" },
+    { path = "usr/lib" },
+    { path = "usr/local" },
+    { path = "usr/local/bin" },
+    { path = "usr/local/include" },
+    { path = "usr/local/lib" },
+    { path = "usr/local/share" },
+    { path = "usr/share" },
+    { path = "usr/share/man" },
+    { path = "usr/share/doc" },
+    { path = "usr/share/sage" },
+    { path = "usr/share/sage/triggers" },
+    { path = "var" },
+    { path = "var/cache" },
+    { path = "var/cache/sage" },
+    { path = "var/cache/sage/channels" },
+    { path = "var/lib" },
+    { path = "var/lib/sage" },
+    { path = "var/log" },
+    { path = "var/tmp", mode = 1023 }
+]
+symlinks = [
+    { path = "bin", target = "usr/bin" },
+    { path = "sbin", target = "usr/bin" },
+    { path = "lib", target = "usr/lib" },
+    { path = "lib64", target = "usr/lib" },
+    { path = "usr/sbin", target = "bin" }
+]
+files = [
+    { path = "etc/issue", content = "SCLinux \\r (\\l)\n\n" },
+    { path = "etc/os-release", content = "NAME=\"SCLinux\"\nID=sclinux\nPRETTY_NAME=\"SCLinux 2026\"\nVERSION_ID=\"2026\"\nHOME_URL=\"https://github.com/sclinuxdev\"\n" }
+]

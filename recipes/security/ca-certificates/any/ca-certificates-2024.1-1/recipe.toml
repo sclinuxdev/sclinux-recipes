@@ -1,0 +1,26 @@
+schema_version = 1
+
+[package]
+name = "ca-certificates"
+version = "2024.1"
+release = 1
+epoch = 0
+description = "Common CA certificates and trust anchors"
+license = "MPL-2.0"
+channel = "system"
+arch = "any"
+
+dependencies = [
+    "virtual/filesystem"
+]
+
+provides = [
+    "virtual/ca-certificates"
+]
+
+[install]
+directories = [
+    { path = "etc/ssl" },
+    { path = "etc/ssl/certs" },
+    { path = "usr/share/ca-certificates" }
+]

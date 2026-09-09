@@ -1,0 +1,46 @@
+schema_version = 1
+name = "custom"
+description = "Direct custom script execution class for meta and system data packages"
+
+implicit_build_dependencies = []
+allowed_compilers = []
+allowed_linkers = []
+
+[defaults]
+"args.install_cmd" = ":"
+
+[phases]
+src_unpack = """
+tab=$(printf '\\t')
+while IFS="$tab" read -r source kind strip destination; do
+    input="${SRC_DIR}/.distfiles/$source"
+    target="${SRC_DIR}/$destination"
+    case "$kind" in
+        archive)
+            mkdir -p "$target"
+            tar -xf "$input" --strip-components="$strip" -C "$target"
+            ;;
+        tree)
+            mkdir -p "$target"
+            cp -a "$input"/. "$target"/
+            ;;
+        file)
+            mkdir -p "$(dirname "$target")"
+            cp -a "$input" "$target"
+            ;;
+        *)
+            echo "unsupported source manifest kind: $kind" >&2
+            exit 1
+            ;;
+    esac
+done < "${SRC_DIR}/.distfiles/manifest"
+"""
+src_prepare = """
+if [ -d "${SRC_DIR}/.patches" ]; then
+    for patch_file in "${SRC_DIR}"/.patches/*; do
+        [ -f "$patch_file" ] || continue
+        patch -d "${SRC_DIR}" -p1 < "$patch_file"
+    done
+fi
+"""
+src_install = "${args.install_cmd}"

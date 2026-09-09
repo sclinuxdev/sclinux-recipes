@@ -1,0 +1,17 @@
+# Sage build artifacts & local pools
+.sage-packages/
+.sage-bootstrap/
+*.pkg.tar.zst
+*.pkg.tar.zst.sig
+
+# Build scratch and workdirs
+build/
+dest/
+source/
+*.log
+
+# Editor & OS temporary files
+*~
+*.swp
+*.bak
+.DS_Store

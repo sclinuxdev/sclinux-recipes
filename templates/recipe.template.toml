@@ -1,0 +1,113 @@
+# SCLinux Package Recipe Template (Schema v1)
+# 规范位置: recipes/<category>/<pkgname>/<arch>/<pkgname>-<version>-<release>/recipe.toml
+
+schema_version = 1
+
+[package]
+name = "example-package"
+version = "1.0.0"
+release = 1
+epoch = 0
+description = "Clear and concise one-line summary of example-package"
+license = "MIT"                       # 必须为标准 SPDX 标识符 (如 GPL-3.0-or-later, Apache-2.0, BSD-3-Clause)
+channel = "system"                    # 默认 system，可针对专属语言栈使用 python/rust 等子通道
+arch = "amd64"                        # amd64, aarch64, riscv64, 或 any (仅限纯数据/无二进制包)
+slot = "0"                            # 默认 ABI slot 为 0
+
+dependencies = [
+    "virtual/libc",
+    "example-package-libs >= 1.0.0"
+]
+
+provides = [
+    "virtual/example"
+]
+
+# 单源码归档 (与 [[sources]] 二选一)
+[source]
+url = "https://example.org/releases/example-package-1.0.0.tar.xz"
+sha256 = "0000000000000000000000000000000000000000000000000000000000000000"
+strip_components = 1
+
+[build]
+# 继承通用构建类 (查看 /home/ir/sage/rclass/*.toml，如 cmake, meson, autotools, cargo 等)
+inherit = ["cmake"]
+
+# 构建参数传递 (覆盖或扩充 rclass 默认变量)
+[build.args]
+cmake_args = "-DENABLE_TEST=OFF -DENABLE_DOCS=OFF"
+
+# 仅在宿主构建沙箱内运行所需的工具依赖 (不打包进运行时依赖)
+dependencies = [
+    "devel/pkgconf",
+    "devel/ninja"
+]
+
+# 交叉编译或头文件/库链接所需的目标依赖 (挂载至沙箱 /sysroot)
+target_dependencies = [
+    "lib/zlib-dev"
+]
+
+# 主包认领策略: "remaining" 代表被子包认领完后剩余的文件全部归入主包
+[build.payload]
+default = "remaining"
+
+# ------------------------------------------------------------------------------
+# 子包 1: 运行时动态链接库 (推荐以 -libs 命名)
+# ------------------------------------------------------------------------------
+[[subpackages]]
+name = "example-package-libs"
+description = "Runtime shared libraries for example-package"
+license = "MIT"
+
+dependencies = [
+    "virtual/libc"
+]
+
+provides = [
+    "so:libexample.so.1"
+]
+
+[subpackages.payload]
+files = [
+    "usr/lib/*.so.*"
+]
+
+# ------------------------------------------------------------------------------
+# 子包 2: 开发头文件与链接符号 (推荐以 -dev 命名)
+# ------------------------------------------------------------------------------
+[[subpackages]]
+name = "example-package-dev"
+description = "Development headers and pkg-config files for example-package"
+license = "MIT"
+
+dependencies = [
+    "example-package-libs = 1.0.0-1"
+]
+
+[subpackages.payload]
+files = [
+    "usr/include/**",
+    "usr/lib/*.so",
+    "usr/lib/pkgconfig/*.pc",
+    "usr/lib/cmake/**"
+]
+
+# ------------------------------------------------------------------------------
+# 声明式系统用户创建 (可选)
+# ------------------------------------------------------------------------------
+# [[sysusers]]
+# type = "u"
+# name = "exampled"
+# id = 120
+# description = "Example daemon user"
+# home = "/var/lib/example"
+# shell = "/usr/bin/nologin"
+
+# ------------------------------------------------------------------------------
+# 声明式命令备选项管理 (可选，多提供者竞争如 vi/vim/nano)
+# ------------------------------------------------------------------------------
+# [[alternatives]]
+# link = "usr/bin/editor"
+# target = "usr/bin/example-editor"
+# priority = 50
