@@ -1,0 +1,376 @@
+schema_version = 1
+
+[package]
+name = "systemd"
+version = "261.2"
+release = 2
+epoch = 0
+description = "System and Service Manager (PID 1, systemctl, and core init targets)"
+license = "LGPL-2.1-or-later AND GPL-2.0-or-later"
+channel = "system"
+arch = "amd64"
+
+dependencies = [
+    "virtual/libc",
+    "systemd-libs = 261.2-2",
+    "systemd-sysvcompat = 261.2-2",
+    "systemd-homed = 261.2-2",
+    "systemd-journald = 261.2-2",
+    "systemd-logind = 261.2-2",
+    "systemd-udev = 261.2-2",
+    "util-linux",
+    "kmod",
+    "shadow",
+    "virtual/sh"
+]
+
+provides = [
+    "virtual/init"
+]
+
+conflicts = [
+    "eudev",
+    "loom"
+]
+
+[source]
+url = "https://github.com/systemd/systemd/archive/refs/tags/v261.2.tar.gz"
+sha256 = "ed1059ff964f5df35b6056434cc17cc83f86dc913f10489948a0b19b6081c5ec"
+
+[build]
+inherit = ["meson"]
+
+dependencies = [
+    "virtual/libc-dev",
+    "gcc16/gcc:16",
+    "gcc16/gcc-dev:16",
+    "python3.14/python:3.14",
+    "system/gperf",
+    "system/linux-headers >= 7.2.4-1",
+    "system/libcap-dev >= 2.78-1",
+    "system/kmod-dev >= 34.2-1",
+    "system/zstd-dev >= 1.5.7-1",
+    "system/xz-dev >= 5.8.3-1",
+    "system/util-linux-dev >= 2.42.3-1"
+]
+
+[build.args]
+meson_args = "-Dbootloader=enabled -Defi=true -Dtests=false -Dman=false -Dhtml=false -Dstandalone-binaries=false -Dkmod=enabled -Dlibcryptsetup=disabled -Dpam=disabled -Daudit=disabled -Dselinux=disabled"
+
+# Keep the base system console-first and make tty1 availability independent of
+# upstream preset policy. These vendor links remain overridable from /etc.
+[[install.symlinks]]
+path = "usr/lib/systemd/system/default.target"
+target = "multi-user.target"
+
+[[install.symlinks]]
+path = "usr/lib/systemd/system/getty.target.wants/getty@tty1.service"
+target = "../getty@.service"
+
+[build.payload]
+default = "remaining"
+
+# ------------------------------------------------------------------------------
+# 1. 基础共享库 (systemd-libs: libsystemd, libudev, libsystemd-shared)
+# ------------------------------------------------------------------------------
+[[subpackages]]
+name = "systemd-libs"
+description = "systemd, udev, and shared runtime libraries"
+license = "LGPL-2.1-or-later"
+
+dependencies = [
+    "virtual/libc",
+    "libcap-libs >= 2.78-1",
+    "zstd-libs >= 1.5.7-1",
+    "xz-libs >= 5.8.3-1"
+]
+
+provides = [
+    "so:libsystemd.so.0",
+    "so:libudev.so.1"
+]
+
+[subpackages.payload]
+files = [
+    "usr/lib/libsystemd.so.*",
+    "usr/lib/libudev.so.*",
+    "usr/lib/systemd/libsystemd-shared-*.so"
+]
+
+# ------------------------------------------------------------------------------
+# 2. UEFI 引导管理器 (systemd-boot: bootctl, EFI stub & loader)
+# ------------------------------------------------------------------------------
+[[subpackages]]
+name = "systemd-boot"
+description = "systemd UEFI boot manager, stub loader, and bootctl management utility"
+license = "LGPL-2.1-or-later"
+
+dependencies = [
+    "virtual/libc",
+    "systemd-libs = 261.2-2"
+]
+
+provides = [
+    "virtual/bootloader",
+    "systemd-boot"
+]
+
+[subpackages.payload]
+files = [
+    "usr/bin/bootctl",
+    "usr/lib/systemd/boot/**",
+    "usr/lib/systemd/system/*bootctl*"
+]
+
+# ------------------------------------------------------------------------------
+# 3. 独立设备管理器 (systemd-udev: udevd, udevadm, rules, hwdb)
+# ------------------------------------------------------------------------------
+[[subpackages]]
+name = "systemd-udev"
+description = "systemd device manager daemon, udevadm utility, rules, and hwdb"
+license = "GPL-2.0-or-later"
+
+dependencies = [
+    "virtual/libc",
+    "systemd-libs = 261.2-2",
+    "kmod-libs >= 34.2-1"
+]
+
+provides = [
+    "virtual/udev",
+    "systemd-udev"
+]
+
+[subpackages.payload]
+files = [
+    "usr/bin/udevadm",
+    "usr/lib/systemd/systemd-udevd",
+    "usr/lib/udev/**",
+    "usr/lib/systemd/system/*udev*"
+]
+
+# ------------------------------------------------------------------------------
+# 4. 日志服务系统 (systemd-journald: journalctl, daemon)
+# ------------------------------------------------------------------------------
+[[subpackages]]
+name = "systemd-journald"
+description = "systemd journal logging daemon and journalctl query tool"
+license = "LGPL-2.1-or-later"
+
+dependencies = [
+    "virtual/libc",
+    "systemd-libs = 261.2-2"
+]
+
+provides = [
+    "systemd-journald"
+]
+
+[subpackages.payload]
+files = [
+    "usr/bin/journalctl",
+    "usr/lib/systemd/systemd-journald*",
+    "usr/lib/systemd/system/*journal*",
+    "usr/lib/sysusers.d/*journal*"
+]
+
+# ------------------------------------------------------------------------------
+# 5. 网络管理守护服务 (systemd-networkd: networkctl, daemon)
+# ------------------------------------------------------------------------------
+[[subpackages]]
+name = "systemd-networkd"
+description = "systemd network management daemon and networkctl utility"
+license = "LGPL-2.1-or-later"
+
+dependencies = [
+    "virtual/libc",
+    "systemd-libs = 261.2-2"
+]
+
+provides = [
+    "systemd-networkd"
+]
+
+[subpackages.payload]
+files = [
+    "usr/bin/networkctl",
+    "usr/lib/systemd/systemd-network*",
+    "usr/lib/systemd/system/*networkd*",
+    "usr/lib/systemd/network/**"
+]
+
+# ------------------------------------------------------------------------------
+# 6. DNS 域名解析守护服务 (systemd-resolved: resolvectl, daemon)
+# ------------------------------------------------------------------------------
+[[subpackages]]
+name = "systemd-resolved"
+description = "systemd network name resolution caching and validating service"
+license = "LGPL-2.1-or-later"
+
+dependencies = [
+    "virtual/libc",
+    "systemd-libs = 261.2-2"
+]
+
+provides = [
+    "systemd-resolved"
+]
+
+[subpackages.payload]
+files = [
+    "usr/bin/resolvectl",
+    "usr/lib/systemd/systemd-resolved*",
+    "usr/lib/systemd/system/*resolved*"
+]
+
+# ------------------------------------------------------------------------------
+# 7. NTP 时间同步守护服务 (systemd-timesyncd: timedatectl, daemon)
+# ------------------------------------------------------------------------------
+[[subpackages]]
+name = "systemd-timesyncd"
+description = "systemd SNTP network time synchronization service and timedatectl"
+license = "LGPL-2.1-or-later"
+
+dependencies = [
+    "virtual/libc",
+    "systemd-libs = 261.2-2"
+]
+
+provides = [
+    "systemd-timesyncd"
+]
+
+[subpackages.payload]
+files = [
+    "usr/bin/timedatectl",
+    "usr/lib/systemd/systemd-timesyncd*",
+    "usr/lib/systemd/system/*timesyncd*"
+]
+
+# ------------------------------------------------------------------------------
+# 8. 用户会话与席位管理服务 (systemd-logind: loginctl, daemon)
+# ------------------------------------------------------------------------------
+[[subpackages]]
+name = "systemd-logind"
+description = "systemd user login, seat, and session management service"
+license = "LGPL-2.1-or-later"
+
+dependencies = [
+    "virtual/libc",
+    "systemd-libs = 261.2-2"
+]
+
+provides = [
+    "systemd-logind"
+]
+
+[subpackages.payload]
+files = [
+    "usr/bin/loginctl",
+    "usr/lib/systemd/systemd-logind*",
+    "usr/lib/systemd/system/*logind*",
+    "usr/lib/systemd/system/*user-session*"
+]
+
+# ------------------------------------------------------------------------------
+# 9. 轻量级容器与机器管理器 (systemd-container: systemd-nspawn, machined)
+# ------------------------------------------------------------------------------
+[[subpackages]]
+name = "systemd-container"
+description = "systemd lightweight container runtime (nspawn) and machined manager"
+license = "LGPL-2.1-or-later"
+
+dependencies = [
+    "virtual/libc",
+    "systemd-libs = 261.2-2"
+]
+
+provides = [
+    "systemd-container"
+]
+
+[subpackages.payload]
+files = [
+    "usr/bin/systemd-nspawn",
+    "usr/bin/machinectl",
+    "usr/lib/systemd/systemd-machined*",
+    "usr/lib/systemd/system/*machined*",
+    "usr/lib/systemd/system/*nspawn*"
+]
+
+# ------------------------------------------------------------------------------
+# 10. 用户主目录与便携家目录管理 (systemd-homed: homectl, userdbd)
+# ------------------------------------------------------------------------------
+[[subpackages]]
+name = "systemd-homed"
+description = "systemd home directory and JSON user records management service"
+license = "LGPL-2.1-or-later"
+
+dependencies = [
+    "virtual/libc",
+    "systemd-libs = 261.2-2"
+]
+
+provides = [
+    "systemd-homed"
+]
+
+[subpackages.payload]
+files = [
+    "usr/bin/homectl",
+    "usr/bin/userdbctl",
+    "usr/lib/systemd/systemd-homed*",
+    "usr/lib/systemd/systemd-userdbd*",
+    "usr/lib/systemd/system/*homed*",
+    "usr/lib/systemd/system/*userdb*"
+]
+
+# ------------------------------------------------------------------------------
+# 11. SysV 传统命令兼容层 (systemd-sysvcompat: init, reboot, shutdown symlinks)
+# ------------------------------------------------------------------------------
+[[subpackages]]
+name = "systemd-sysvcompat"
+description = "SysVinit compatibility symlinks for systemd (init, reboot, shutdown, halt)"
+license = "LGPL-2.1-or-later"
+
+dependencies = [
+    "systemd-libs = 261.2-2"
+]
+
+[subpackages.payload]
+files = [
+    "sbin/init",
+    "sbin/reboot",
+    "sbin/shutdown",
+    "sbin/poweroff",
+    "sbin/halt",
+    "sbin/runlevel",
+    "sbin/telinit",
+    "usr/bin/reboot",
+    "usr/bin/shutdown",
+    "usr/bin/poweroff",
+    "usr/bin/halt"
+]
+
+# ------------------------------------------------------------------------------
+# 12. 开发头文件与链接库 (systemd-dev: headers, pkg-config)
+# ------------------------------------------------------------------------------
+[[subpackages]]
+name = "systemd-dev"
+description = "systemd and udev development headers, pkg-config, and linker files"
+license = "LGPL-2.1-or-later"
+
+dependencies = [
+    "systemd-libs = 261.2-2"
+]
+
+[subpackages.payload]
+files = [
+    "usr/include/systemd/**",
+    "usr/include/libudev.h",
+    "usr/lib/libsystemd.so",
+    "usr/lib/libudev.so",
+    "usr/lib/pkgconfig/libsystemd.pc",
+    "usr/lib/pkgconfig/libudev.pc",
+    "usr/lib/pkgconfig/systemd.pc"
+]
