@@ -17,12 +17,13 @@ dependencies = [
 
 [source]
 url = "https://github.com/madler/zlib/releases/download/v1.3.1/zlib-1.3.1.tar.xz"
-sha256 = "38ef96b8dda510d213702104f50614ee6687a45db2300a8a8eb61931a7ea6451"
+sha256 = "38ef96b8dfe510d42707d9c781877914792541133e1870841463bfa73f883e32"
 
 [build]
 inherit = ["custom"]
 
 [build.args]
+install_cmd = './configure --prefix=/usr && make -j${JOBS} && make DESTDIR=${DESTDIR} install'
 configure_args = "--prefix=/usr --shared"
 
 [build.payload]

@@ -1,0 +1,13 @@
+schema_version = 1
+name = "mkinitcpio"
+description = "Regenerate initramfs images when mkinitcpio configuration or hooks change"
+on_paths = [
+    "etc/mkinitcpio.conf",
+    "etc/mkinitcpio.conf.d/*.conf",
+    "etc/mkinitcpio.d/*.preset",
+    "usr/lib/initcpio/**"
+]
+exec = ["/usr/lib/sage/initramfs-generators/mkinitcpio", "${sysroot}", "all"]
+priority = 80
+events = ["post-change"]
+ignore_missing_binary = true

@@ -1,0 +1,68 @@
+schema_version = 1
+
+[package]
+name = "zstd"
+version = "1.5.7"
+release = 1
+epoch = 0
+description = "Zstandard - Fast real-time compression algorithm"
+license = "BSD-3-Clause OR GPL-2.0-only"
+channel = "system"
+arch = "amd64"
+
+dependencies = [
+    "virtual/libc",
+    "zstd-libs = 1.5.7-1"
+]
+
+provides = [
+    "zstd"
+]
+
+[source]
+url = "https://github.com/facebook/zstd/releases/download/v1.5.7/zstd-1.5.7.tar.gz"
+sha256 = "eb33e51f49a15e023950cd7825ca74a4a2b43db8354825ac24fc1b7ee09e6fa3"
+
+[build]
+inherit = ["custom"]
+
+[build.args]
+install_cmd = 'make -j${JOBS} prefix=/usr && make prefix=/usr DESTDIR=${DESTDIR} install'
+
+[build.payload]
+default = "remaining"
+
+[[subpackages]]
+name = "zstd-libs"
+description = "Zstandard runtime shared library"
+license = "BSD-3-Clause OR GPL-2.0-only"
+
+dependencies = [
+    "virtual/libc"
+]
+
+provides = [
+    "so:libzstd.so.1"
+]
+
+[subpackages.payload]
+files = [
+    "usr/lib/libzstd.so.*"
+]
+
+[[subpackages]]
+name = "zstd-dev"
+description = "Zstandard development headers and link library"
+license = "BSD-3-Clause OR GPL-2.0-only"
+
+dependencies = [
+    "zstd-libs = 1.5.7-1"
+]
+
+[subpackages.payload]
+files = [
+    "usr/include/zstd*.h",
+    "usr/lib/libzstd.so",
+    "usr/lib/libzstd.a",
+    "usr/lib/pkgconfig/libzstd.pc"
+]

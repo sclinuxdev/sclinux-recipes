@@ -1,0 +1,33 @@
+schema_version = 1
+
+[package]
+name = "xkeyboard-config"
+version = "2.48"
+release = 1
+epoch = 0
+description = "X Keyboard Extension configuration data"
+license = "MIT"
+channel = "system"
+arch = "any"
+
+[source]
+url = "https://www.x.org/archive/individual/data/xkeyboard-config/xkeyboard-config-2.48.tar.xz"
+sha256 = "b77041324f0109f77161ee43743fe04baa485866af8460d31e476ad3f7648fd5"
+
+[build]
+inherit = [
+    "meson"
+]
+
+dependencies = [
+    "system/meson",
+    "system/ninja",
+    "system/pkgconf",
+    "python3.14/python:3.14"
+]
+
+[build.args]
+meson_args = "-Dcompat-rules=true -Dxorg-rules-symlinks=true"
+
+[build.payload]
+default = "remaining"

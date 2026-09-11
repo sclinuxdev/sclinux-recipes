@@ -1,0 +1,63 @@
+schema_version = 1
+
+[package]
+name = "libpng"
+version = "1.6.58"
+release = 1
+epoch = 0
+description = "Official PNG reference library"
+license = "libpng-2.0"
+channel = "system"
+arch = "amd64"
+
+dependencies = [
+    "virtual/libc",
+    "system/zlib"
+]
+
+provides = [
+    "so:libpng16.so.16"
+]
+
+[source]
+url = "https://download.sourceforge.net/libpng/libpng-1.6.58.tar.xz"
+sha256 = "28eb403f51f0f7405249132cecfe82ea5c0ef97f1b32c5a65828814ae0d34775"
+
+[build]
+inherit = [
+    "cmake"
+]
+
+dependencies = [
+    "virtual/libc-dev",
+    "gcc16/gcc:16",
+    "gcc16/gcc-dev:16",
+    "system/cmake",
+    "system/ninja",
+    "system/pkgconf",
+    "system/zlib-dev"
+]
+
+[build.args]
+cmake_args = "-DPNG_TESTS=OFF"
+
+[build.payload]
+default = "remaining"
+
+[[subpackages]]
+name = "libpng-dev"
+description = "Official PNG reference library development files"
+license = "libpng-2.0"
+
+dependencies = [
+    "libpng = 1.6.58-1"
+]
+
+[subpackages.payload]
+files = [
+    "usr/include/**",
+    "usr/lib/*.so",
+    "usr/lib/*.a",
+    "usr/lib/pkgconfig/**",
+    "usr/lib/cmake/**"
+]

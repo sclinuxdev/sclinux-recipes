@@ -1,0 +1,70 @@
+schema_version = 1
+
+[package]
+name = "pcre2"
+version = "10.48"
+release = 1
+epoch = 0
+description = "Perl-compatible regular expression library"
+license = "BSD-2-Clause AND BSD-3-Clause WITH PCRE2-exception"
+channel = "system"
+arch = "amd64"
+
+dependencies = [
+    "virtual/libc",
+    "bzip2",
+    "system/readline",
+    "system/zlib"
+]
+
+provides = [
+    "so:libpcre2-8.so.0",
+    "so:libpcre2-16.so.0",
+    "so:libpcre2-32.so.0",
+    "pcre2"
+]
+
+[source]
+url = "https://github.com/PCRE2Project/pcre2/releases/download/pcre2-10.48/pcre2-10.48.tar.bz2"
+sha256 = "b6c68fdf6f3ac31388b50aa89ff0fc49c00c987c16e7b5146491d12003f2c8ed"
+
+[build]
+inherit = [
+    "cmake"
+]
+
+dependencies = [
+    "virtual/libc-dev",
+    "gcc16/gcc:16",
+    "gcc16/gcc-dev:16",
+    "system/cmake",
+    "system/ninja",
+    "system/pkgconf",
+    "system/bzip2-dev",
+    "system/readline-dev",
+    "system/zlib-dev"
+]
+
+[build.args]
+cmake_args = "-DPCRE2_BUILD_PCRE2_8=ON -DPCRE2_BUILD_PCRE2_16=ON -DPCRE2_BUILD_PCRE2_32=ON -DPCRE2_BUILD_TESTS=OFF -DPCRE2_SUPPORT_JIT=ON"
+
+[build.payload]
+default = "remaining"
+
+[[subpackages]]
+name = "pcre2-dev"
+description = "Perl-compatible regular expression library development files"
+license = "BSD-2-Clause AND BSD-3-Clause WITH PCRE2-exception"
+
+dependencies = [
+    "pcre2 = 10.48-1"
+]
+
+[subpackages.payload]
+files = [
+    "usr/include/**",
+    "usr/lib/*.so",
+    "usr/lib/*.a",
+    "usr/lib/pkgconfig/**",
+    "usr/lib/cmake/**"
+]

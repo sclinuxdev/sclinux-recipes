@@ -1,0 +1,63 @@
+schema_version = 1
+
+[package]
+name = "gettext"
+version = "0.23.1"
+release = 1
+epoch = 0
+description = "GNU internationalization and localization tools"
+license = "GPL-3.0-or-later AND LGPL-2.1-or-later"
+channel = "system"
+arch = "amd64"
+
+dependencies = [
+    "system/gettext-libs >= 0.23.1-1"
+]
+
+[source]
+url = "https://ftp.gnu.org/gnu/gettext/gettext-0.23.1.tar.xz"
+sha256 = "c1f97a72a7385b7e71dd07b5fea6cdaf12c9b88b564976b23bd8c11857af2970"
+
+[build]
+inherit = ["custom"]
+
+dependencies = [
+    "system/ncurses-dev >= 6.6-1"
+]
+
+[build.args]
+compile_cmd = "./configure --prefix=/usr --disable-static && make -j${JOBS}"
+install_cmd = './configure --prefix=/usr && make -j${JOBS} && make DESTDIR=${DESTDIR} install'
+
+[build.payload]
+default = "remaining"
+
+[[subpackages]]
+name = "gettext-libs"
+description = "GNU gettext runtime libraries"
+license = "LGPL-2.1-or-later"
+
+dependencies = [
+    "virtual/libc"
+]
+
+[subpackages.payload]
+files = [
+    "usr/lib/*.so.*"
+]
+
+[[subpackages]]
+name = "gettext-dev"
+description = "GNU gettext development headers and pkgconfig"
+license = "LGPL-2.1-or-later"
+
+dependencies = [
+    "system/gettext-libs >= 0.23.1-1"
+]
+
+[subpackages.payload]
+files = [
+    "usr/include/**",
+    "usr/lib/*.so",
+    "usr/lib/pkgconfig/**"
+]

@@ -1,0 +1,63 @@
+schema_version = 1
+
+[package]
+name = "gmp"
+version = "6.3.0"
+release = 1
+epoch = 0
+description = "GNU Multiple Precision Arithmetic Library"
+license = "LGPL-3.0-or-later AND GPL-2.0-or-later"
+channel = "system"
+arch = "amd64"
+
+dependencies = [
+    "virtual/libc",
+    "gmp-libs = 6.3.0-1"
+]
+
+[source]
+url = "https://ftp.gnu.org/gnu/gmp/gmp-6.3.0.tar.xz"
+sha256 = "a3c2b80201b89e68616f4ad30bc66aee4927c3ce50e33929ca819d5c43538898"
+
+[build]
+inherit = ["autotools"]
+
+[build.args]
+configure_args = "--disable-cxx --enable-fat CFLAGS=\"-std=gnu17 -O3 -march=x86-64 -pipe\""
+
+[build.payload]
+default = "remaining"
+
+[[subpackages]]
+name = "gmp-libs"
+description = "GNU Multiple Precision Arithmetic Library runtime libraries"
+license = "LGPL-3.0-or-later"
+
+dependencies = [
+    "virtual/libc"
+]
+
+provides = [
+    "so:libgmp.so.10"
+]
+
+[subpackages.payload]
+files = [
+    "usr/lib/*.so.*"
+]
+
+[[subpackages]]
+name = "gmp-dev"
+description = "GNU Multiple Precision Arithmetic Library headers and development files"
+license = "LGPL-3.0-or-later"
+
+dependencies = [
+    "gmp-libs = 6.3.0-1"
+]
+
+[subpackages.payload]
+files = [
+    "usr/include/**",
+    "usr/lib/*.so",
+    "usr/lib/pkgconfig/*.pc"
+]

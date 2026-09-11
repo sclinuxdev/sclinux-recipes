@@ -1,0 +1,28 @@
+schema_version = 1
+
+[package]
+name = "linux-headers"
+version = "7.2.4"
+release = 1
+epoch = 0
+description = "Linux kernel sanitized UAPI headers"
+license = "GPL-2.0-only"
+channel = "system"
+arch = "amd64"
+
+dependencies = [
+    "virtual/filesystem"
+]
+
+[source]
+url = "https://cdn.kernel.org/pub/linux/kernel/v7.x/linux-7.2.4.tar.xz"
+sha256 = "01710ee01737dac492f1bae52becd057e08d20d11589089aa06accff415c28dd"
+
+[build]
+inherit = ["custom"]
+
+[build.args]
+install_cmd = 'make headers && mkdir -p ${DESTDIR}/usr && cp -r --no-preserve=ownership usr/include ${DESTDIR}/usr/ && find ${DESTDIR}/usr/include \( -name .install -o -name ..install.cmd \) -delete'
+
+[build.payload]
+default = "remaining"

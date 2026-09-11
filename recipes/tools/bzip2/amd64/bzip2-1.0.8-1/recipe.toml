@@ -1,0 +1,60 @@
+schema_version = 1
+
+[package]
+name = "bzip2"
+version = "1.0.8"
+release = 1
+epoch = 0
+description = "A high-quality data compression program and library"
+license = "bzip2-1.0.6"
+channel = "system"
+arch = "amd64"
+
+dependencies = [
+    "virtual/libc"
+]
+
+provides = [
+    "so:libbz2.so.1"
+]
+
+[source]
+url = "https://sourceware.org/pub/bzip2/bzip2-1.0.8.tar.gz"
+sha256 = "ab5a03176ee106d3f0fa90e381da478ddae405918153cca248e682cd0c4a2269"
+
+[build]
+inherit = [
+    "custom"
+]
+
+dependencies = [
+    "virtual/libc-dev",
+    "gcc16/gcc:16",
+    "gcc16/gcc-dev:16",
+    "system/pkgconf",
+    "system/make"
+]
+
+[build.args]
+install_cmd = "make -j${JOBS} CFLAGS=\"${CFLAGS} -fPIC\" && make PREFIX=/usr DESTDIR=\"${DESTDIR}\" install"
+
+[build.payload]
+default = "remaining"
+
+[[subpackages]]
+name = "bzip2-dev"
+description = "A high-quality data compression program and library development files"
+license = "bzip2-1.0.6"
+
+dependencies = [
+    "bzip2 = 1.0.8-1"
+]
+
+[subpackages.payload]
+files = [
+    "usr/include/**",
+    "usr/lib/*.so",
+    "usr/lib/*.a",
+    "usr/lib/pkgconfig/**",
+    "usr/lib/cmake/**"
+]

@@ -1,0 +1,66 @@
+schema_version = 1
+
+[package]
+name = "freetype2"
+version = "2.14.3"
+release = 1
+epoch = 0
+description = "Font rendering engine"
+license = "FTL OR GPL-2.0-or-later"
+channel = "system"
+arch = "amd64"
+
+dependencies = [
+    "virtual/libc",
+    "bzip2",
+    "libpng",
+    "system/zlib"
+]
+
+provides = [
+    "freetype",
+    "so:libfreetype.so.6"
+]
+
+[source]
+url = "https://download.savannah.gnu.org/releases/freetype/freetype-2.14.3.tar.xz"
+sha256 = "36bc4f1cc413335368ee656c42afca65c5a3987e8768cc28cf11ba775e785a5f"
+
+[build]
+inherit = [
+    "meson"
+]
+
+dependencies = [
+    "virtual/libc-dev",
+    "gcc16/gcc:16",
+    "gcc16/gcc-dev:16",
+    "system/pkgconf",
+    "system/bzip2-dev",
+    "system/libpng-dev",
+    "system/zlib-dev"
+]
+
+[build.args]
+meson_args = "-Dharfbuzz=disabled -Dpng=enabled -Dbzip2=enabled -Dbrotli=disabled -Dtests=disabled"
+
+[build.payload]
+default = "remaining"
+
+[[subpackages]]
+name = "freetype2-dev"
+description = "Font rendering engine development files"
+license = "FTL OR GPL-2.0-or-later"
+
+dependencies = [
+    "freetype2 = 2.14.3-1"
+]
+
+[subpackages.payload]
+files = [
+    "usr/include/**",
+    "usr/lib/*.so",
+    "usr/lib/*.a",
+    "usr/lib/pkgconfig/**",
+    "usr/lib/cmake/**"
+]

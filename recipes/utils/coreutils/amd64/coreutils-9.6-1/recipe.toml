@@ -20,7 +20,7 @@ provides = [
 
 [source]
 url = "https://ftp.gnu.org/gnu/coreutils/coreutils-9.6.tar.xz"
-sha256 = "91a806a099a531e2d7831dcab9b76313b28b7e283abeb2f592d3c11ff056f4e7"
+sha256 = "7a0124327b398fd9eb1a6abde583389821422c744ffa10734b24f557610d3283"
 
 [build]
 inherit = ["autotools"]

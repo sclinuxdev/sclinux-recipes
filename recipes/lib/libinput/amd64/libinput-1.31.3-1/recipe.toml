@@ -1,0 +1,69 @@
+schema_version = 1
+
+[package]
+name = "libinput"
+version = "1.31.3"
+release = 1
+epoch = 0
+description = "Input device management and event processing library"
+license = "MIT"
+channel = "system"
+arch = "amd64"
+
+dependencies = [
+    "virtual/libc",
+    "libevdev",
+    "mtdev",
+    "glib2",
+    "systemd-libs"
+]
+
+provides = [
+    "so:libinput.so.10"
+]
+
+[[sources]]
+kind = "git"
+url = "https://gitlab.freedesktop.org/libinput/libinput.git"
+commit = "f534c63ce3e3621af010b0cd707f5ec33ece2804"
+destination = "."
+
+[build]
+inherit = [
+    "meson"
+]
+
+dependencies = [
+    "virtual/libc-dev",
+    "gcc16/gcc:16",
+    "gcc16/gcc-dev:16",
+    "system/pkgconf",
+    "system/libevdev-dev",
+    "system/mtdev-dev",
+    "system/glib2-dev",
+    "system/systemd-dev"
+]
+
+[build.args]
+meson_args = "-Dlibwacom=false -Dlua-plugins=disabled -Dtests=false -Ddebug-gui=false"
+
+[build.payload]
+default = "remaining"
+
+[[subpackages]]
+name = "libinput-dev"
+description = "Input device management and event processing library development files"
+license = "MIT"
+
+dependencies = [
+    "libinput = 1.31.3-1"
+]
+
+[subpackages.payload]
+files = [
+    "usr/include/**",
+    "usr/lib/*.so",
+    "usr/lib/*.a",
+    "usr/lib/pkgconfig/**",
+    "usr/lib/cmake/**"
+]

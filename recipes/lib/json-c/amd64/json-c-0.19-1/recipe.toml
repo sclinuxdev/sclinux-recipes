@@ -1,0 +1,61 @@
+schema_version = 1
+
+[package]
+name = "json-c"
+version = "0.19"
+release = 1
+epoch = 0
+description = "JSON implementation in C"
+license = "MIT"
+channel = "system"
+arch = "amd64"
+
+dependencies = [
+    "virtual/libc"
+]
+
+provides = [
+    "so:libjson-c.so.5"
+]
+
+[source]
+url = "https://github.com/json-c/json-c/archive/refs/tags/json-c-0.19-20260627.tar.gz"
+sha256 = "f17a6d7d265cf840dfd8f0f46a606d98c6b5b26dc7cfe27275d1546a213086c8"
+
+[build]
+inherit = [
+    "cmake"
+]
+
+dependencies = [
+    "virtual/libc-dev",
+    "gcc16/gcc:16",
+    "gcc16/gcc-dev:16",
+    "system/cmake",
+    "system/ninja",
+    "system/pkgconf"
+]
+
+[build.args]
+cmake_args = "-DBUILD_STATIC_LIBS=OFF -DBUILD_TESTING=OFF"
+
+[build.payload]
+default = "remaining"
+
+[[subpackages]]
+name = "json-c-dev"
+description = "JSON implementation in C development files"
+license = "MIT"
+
+dependencies = [
+    "json-c = 0.19-1"
+]
+
+[subpackages.payload]
+files = [
+    "usr/include/**",
+    "usr/lib/*.so",
+    "usr/lib/*.a",
+    "usr/lib/pkgconfig/**",
+    "usr/lib/cmake/**"
+]

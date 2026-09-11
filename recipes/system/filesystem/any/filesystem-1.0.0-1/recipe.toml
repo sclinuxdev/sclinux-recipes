@@ -41,6 +41,10 @@ directories = [
     { path = "usr/share/doc" },
     { path = "usr/share/sage" },
     { path = "usr/share/sage/triggers" },
+    { path = "usr/lib/sage" },
+    { path = "usr/lib/sage/initramfs-generators" },
+    { path = "etc/sage" },
+    { path = "etc/sage/initramfs-generators" },
     { path = "var" },
     { path = "var/cache" },
     { path = "var/cache/sage" },
@@ -59,6 +63,106 @@ symlinks = [
     { path = "usr/sbin", target = "bin" }
 ]
 files = [
-    { path = "etc/issue", content = "SCLinux \\r (\\l)\n\n" },
-    { path = "etc/os-release", content = "NAME=\"SCLinux\"\nID=sclinux\nPRETTY_NAME=\"SCLinux 2026\"\nVERSION_ID=\"2026\"\nHOME_URL=\"https://github.com/sclinuxdev\"\n" }
+    { path = "usr/bin/.keep", content = "" },
+    { path = "usr/lib/.keep", content = "" },
+    { path = "usr/share/sage/triggers/ldconfig.toml", content = "schema_version = 1\nname = \"ldconfig\"\ndescription = \"Refresh dynamic linker runtime bindings\"\non_paths = [\"usr/lib*/**/*.so\", \"usr/lib*/**/*.so.*\", \"lib*/**/*.so*\"]\nexec = [\"/usr/sbin/ldconfig\", \"-r\", \"${sysroot}\"]\npriority = 10\nevents = [\"post-change\", \"post-remove\"]\nignore_missing_binary = true\n" },
+    { path = "usr/share/sage/triggers/depmod.toml", content = "schema_version = 1\nname = \"depmod\"\ndescription = \"Regenerate dependency maps for changed kernel module slots\"\non_paths = [\"usr/lib/modules/**\"]\nexec = [\"/usr/bin/depmod\", \"-a\", \"${path[3]}\"]\npriority = 20\nevents = [\"post-change\", \"post-remove\"]\nignore_missing_binary = true\n" },
+    { path = "usr/share/sage/triggers/initramfs.toml", content = "schema_version = 1\nname = \"initramfs\"\ndescription = \"Generate or update initramfs images for kernel releases\"\non_paths = [\"usr/lib/modules/*/vmlinuz\"]\nexec = [\"/usr/lib/sage/initramfs-generator\", \"${sysroot}\", \"${path[3]}\"]\npriority = 30\nevents = [\"post-change\", \"post-remove\"]\nignore_missing_binary = true\n" },
+    { path = "usr/lib/sage/initramfs-generator", mode = 493, content = """#!/usr/bin/env bash
+# Sage generic initramfs generator dispatcher
+set -euo pipefail
+
+SYSROOT="${1:-${SAGE_SYSROOT:-}}"
+KVER="${2:-}"
+
+if [ "$SYSROOT" = "/" ]; then
+    SYSROOT=""
+fi
+
+if [ -z "$KVER" ]; then
+    exit 0
+fi
+
+# 1. Check if a specific generator is pinned in /etc/sage/initramfs.toml
+CONFIG_FILE="${SYSROOT}/etc/sage/initramfs.toml"
+CONFIGURED_GEN=""
+if [ -f "$CONFIG_FILE" ]; then
+    CONFIGURED_GEN="$(grep -E '^[[:space:]]*generator[[:space:]]*=' "$CONFIG_FILE" 2>/dev/null | head -n1 | cut -d'=' -f2- | tr -d ' "' || true)"
+fi
+
+find_generator() {
+    local name="$1"
+    if [ -x "${SYSROOT}/etc/sage/initramfs-generators/${name}" ]; then
+        echo "${SYSROOT}/etc/sage/initramfs-generators/${name}"
+    elif [ -x "${SYSROOT}/usr/lib/sage/initramfs-generators/${name}" ]; then
+        echo "${SYSROOT}/usr/lib/sage/initramfs-generators/${name}"
+    fi
+}
+
+if [ -n "$CONFIGURED_GEN" ]; then
+    GEN_BIN="$(find_generator "$CONFIGURED_GEN")"
+    if [ -n "$GEN_BIN" ]; then
+        "$GEN_BIN" "$SYSROOT" "$KVER"
+        exit 0
+    else
+        echo ":: [initramfs] Configured generator '$CONFIGURED_GEN' not found or not executable" >&2
+        exit 1
+    fi
+fi
+
+# 2. Discover available generator plugins
+# /etc/sage/initramfs-generators takes precedence over /usr/lib/sage/initramfs-generators
+GENERATOR_DIRS=(
+    "${SYSROOT}/etc/sage/initramfs-generators"
+    "${SYSROOT}/usr/lib/sage/initramfs-generators"
+)
+
+declare -A SEEN_GENERATORS
+FOUND=0
+
+for gdir in "${GENERATOR_DIRS[@]}"; do
+    if [ -d "$gdir" ]; then
+        for gen in "$gdir"/*; do
+            if [ -x "$gen" ]; then
+                base="$(basename "$gen")"
+                if [ -z "${SEEN_GENERATORS[$base]:-}" ]; then
+                    SEEN_GENERATORS[$base]=1
+                    FOUND=1
+                    "$gen" "$SYSROOT" "$KVER"
+                fi
+            fi
+        done
+    fi
+done
+
+if [ "$FOUND" -eq 0 ]; then
+    echo ":: [initramfs] No initramfs generator found in /usr/lib/sage/initramfs-generators for kernel $KVER"
+fi
+""" }
 ]
+
+[[sysusers]]
+type = "group"
+name = "root"
+id = 0
+
+[[sysusers]]
+type = "user"
+name = "root"
+id = 0
+description = "Super User"
+home = "/root"
+shell = "/usr/bin/bash"
+
+[[sysusers]]
+type = "group"
+name = "nobody"
+id = 65534
+
+[[sysusers]]
+type = "user"
+name = "nobody"
+id = 65534
+description = "Nobody"
+home = "/nonexistent"
+shell = "/usr/bin/nologin"

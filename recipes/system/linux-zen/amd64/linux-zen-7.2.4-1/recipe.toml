@@ -1,0 +1,62 @@
+schema_version = 1
+
+[package]
+name = "linux-zen"
+version = "7.2.4"
+release = 1
+epoch = 0
+description = "The Linux ZEN Kernel and modules with CJKTTY patch"
+license = "GPL-2.0-only"
+channel = "system"
+arch = "amd64"
+slot = "7.2.4-zen2"
+
+dependencies = [
+    "virtual/filesystem",
+    "virtual/initramfs-generator",
+    "system/kmod >= 34.2-1"
+]
+
+provides = [
+    "virtual/kernel"
+]
+
+[[sources]]
+url = "https://cdn.kernel.org/pub/linux/kernel/v7.x/linux-7.2.4.tar.xz"
+sha256 = "01710ee01737dac492f1bae52becd057e08d20d11589089aa06accff415c28dd"
+
+[[sources]]
+kind = "file"
+url = "https://github.com/zen-kernel/zen-kernel/releases/download/v7.2.4-zen2/linux-v7.2.4-zen2.patch.zst"
+sha256 = "744bc99ec3b87f0b973f7e8a055d1044a3541f72d9ac5f2bd4c376c8d42910ae"
+destination = ".source-patches/01-linux-v7.2.4-zen2.patch.zst"
+
+[[sources]]
+kind = "file"
+url = "https://raw.githubusercontent.com/bigshans/cjktty-patches/master/v7.x/cjktty-7.2.patch"
+sha256 = "252c69ec48019660dce565c45e287626793f84939cec249d62644a11ea9842a8"
+destination = ".source-patches/02-cjktty-7.2.patch"
+
+[[sources]]
+kind = "file"
+url = "https://gitlab.archlinux.org/archlinux/packaging/packages/linux-zen/-/raw/7c9f34b00b0c4d99190d0dd772f2fedebdc6870d/config.x86_64"
+sha256 = "f1066b5eb1c7b42ad438fd1380ffc39b8e0ef35b88bc1e8f9beb8683b0c1d6c6"
+destination = "config.x86_64"
+
+[build]
+inherit = ["kernel"]
+cflags = "-O2 -march=x86-64 -pipe"
+
+[build.args]
+package_name = "linux-zen"
+kernel_arch = "x86"
+config = "config.x86_64"
+hostname = "sclinux"
+
+[install]
+files = [
+    { path = "etc/mkinitcpio.d/linux-zen-7.2.4.preset", content = "# mkinitcpio preset file for the 'linux-zen-7.2.4' package\n\nALL_config=\"/etc/mkinitcpio.conf\"\nALL_kver=\"/boot/vmlinuz-linux-zen-7.2.4\"\n\nPRESETS=('default' 'fallback')\n\n#default_config=\"/etc/mkinitcpio.conf\"\ndefault_image=\"/boot/initramfs-linux-zen-7.2.4.img\"\n#default_options=\"\"\n\n#fallback_config=\"/etc/mkinitcpio.conf\"\nfallback_image=\"/boot/initramfs-linux-zen-7.2.4-fallback.img\"\nfallback_options=\"-S autodetect\"\n" }
+]
+
+[build.payload]
+default = "remaining"

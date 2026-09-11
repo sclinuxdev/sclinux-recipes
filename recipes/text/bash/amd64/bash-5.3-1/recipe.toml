@@ -1,0 +1,39 @@
+schema_version = 1
+
+[package]
+name = "bash"
+version = "5.3"
+release = 1
+epoch = 0
+description = "The GNU Bourne Again shell"
+license = "GPL-3.0-or-later"
+channel = "system"
+arch = "amd64"
+
+dependencies = [
+    "virtual/libc",
+    "readline-libs >= 8.3-1",
+    "ncurses-libs >= 6.6-1"
+]
+
+provides = [
+    "virtual/sh"
+]
+
+[source]
+url = "https://ftp.gnu.org/gnu/bash/bash-5.3.tar.gz"
+sha256 = "0d5cd86965f869a26cf64f4b71be7b96f90a3ba8b3d74e27e8e9d9d5550f31ba"
+
+[build]
+inherit = ["autotools"]
+
+[build.args]
+configure_args = "--with-installed-readline --without-bash-malloc"
+
+[build.payload]
+default = "remaining"
+
+[[alternatives]]
+link = "usr/bin/sh"
+target = "usr/bin/bash"
+priority = 50

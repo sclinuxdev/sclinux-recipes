@@ -2,7 +2,13 @@ schema_version = 1
 name = "cmake"
 description = "CMake and Ninja build class"
 
-implicit_build_dependencies = ["system/cmake", "system/ninja"]
+implicit_build_dependencies = [
+    "system/cmake",
+    "system/ninja",
+    "virtual/libc-dev",
+    "gcc16/gcc:16",
+    "gcc16/gcc-dev:16"
+]
 allowed_compilers = ["clang", "gcc"]
 allowed_linkers = ["lld", "mold", "ld"]
 

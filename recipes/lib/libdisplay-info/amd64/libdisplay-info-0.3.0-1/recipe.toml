@@ -1,0 +1,59 @@
+schema_version = 1
+
+[package]
+name = "libdisplay-info"
+version = "0.3.0"
+release = 1
+epoch = 0
+description = "EDID and DisplayID parsing library"
+license = "MIT"
+channel = "system"
+arch = "amd64"
+
+dependencies = [
+    "virtual/libc"
+]
+
+provides = [
+    "so:libdisplay-info.so.1"
+]
+
+[source]
+url = "https://gitlab.freedesktop.org/emersion/libdisplay-info/-/releases/0.3.0/downloads/libdisplay-info-0.3.0.tar.xz"
+sha256 = "6ae77cd937f9cf7d1321d35c116062c4911e8447010a6a713ac4286f7a9d5987"
+
+[build]
+inherit = [
+    "meson"
+]
+
+dependencies = [
+    "virtual/libc-dev",
+    "gcc16/gcc:16",
+    "gcc16/gcc-dev:16",
+    "system/pkgconf"
+]
+
+[build.args]
+meson_args = "-Dtests=false -Dman-pages=disabled"
+
+[build.payload]
+default = "remaining"
+
+[[subpackages]]
+name = "libdisplay-info-dev"
+description = "EDID and DisplayID parsing library development files"
+license = "MIT"
+
+dependencies = [
+    "libdisplay-info = 0.3.0-1"
+]
+
+[subpackages.payload]
+files = [
+    "usr/include/**",
+    "usr/lib/*.so",
+    "usr/lib/*.a",
+    "usr/lib/pkgconfig/**",
+    "usr/lib/cmake/**"
+]

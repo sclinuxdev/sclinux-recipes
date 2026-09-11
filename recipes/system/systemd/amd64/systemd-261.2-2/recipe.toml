@@ -21,6 +21,7 @@ dependencies = [
     "util-linux",
     "kmod",
     "shadow",
+    "pam",
     "virtual/sh"
 ]
 
@@ -51,11 +52,12 @@ dependencies = [
     "system/kmod-dev >= 34.2-1",
     "system/zstd-dev >= 1.5.7-1",
     "system/xz-dev >= 5.8.3-1",
-    "system/util-linux-dev >= 2.42.3-1"
+    "system/util-linux-dev >= 2.42.3-1",
+    "system/pam-dev"
 ]
 
 [build.args]
-meson_args = "-Dbootloader=enabled -Defi=true -Dtests=false -Dman=false -Dhtml=false -Dstandalone-binaries=false -Dkmod=enabled -Dlibcryptsetup=disabled -Dpam=disabled -Daudit=disabled -Dselinux=disabled"
+meson_args = "-Dbootloader=enabled -Defi=true -Dtests=false -Dman=false -Dhtml=false -Dstandalone-binaries=false -Dkmod=enabled -Dlibcryptsetup=disabled -Dpam=enabled -Daudit=disabled -Dselinux=disabled"
 
 # Keep the base system console-first and make tty1 availability independent of
 # upstream preset policy. These vendor links remain overridable from /etc.

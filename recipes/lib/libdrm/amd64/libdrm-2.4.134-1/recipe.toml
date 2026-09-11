@@ -1,0 +1,59 @@
+schema_version = 1
+
+[package]
+name = "libdrm"
+version = "2.4.134"
+release = 1
+epoch = 0
+description = "Userspace interface to kernel DRM services"
+license = "MIT"
+channel = "system"
+arch = "amd64"
+
+dependencies = [
+    "virtual/libc"
+]
+
+provides = [
+    "so:libdrm.so.2"
+]
+
+[source]
+url = "https://dri.freedesktop.org/libdrm/libdrm-2.4.134.tar.xz"
+sha256 = "ac5e74d157830eb8bee44c6a6bf3ad49774ef0dd2a72bdad74a8f20308b52a95"
+
+[build]
+inherit = [
+    "meson"
+]
+
+dependencies = [
+    "virtual/libc-dev",
+    "gcc16/gcc:16",
+    "gcc16/gcc-dev:16",
+    "system/pkgconf"
+]
+
+[build.args]
+meson_args = "-Dlibkms=disabled -Dtests=false -Dman-pages=disabled"
+
+[build.payload]
+default = "remaining"
+
+[[subpackages]]
+name = "libdrm-dev"
+description = "Userspace interface to kernel DRM services development files"
+license = "MIT"
+
+dependencies = [
+    "libdrm = 2.4.134-1"
+]
+
+[subpackages.payload]
+files = [
+    "usr/include/**",
+    "usr/lib/*.so",
+    "usr/lib/*.a",
+    "usr/lib/pkgconfig/**",
+    "usr/lib/cmake/**"
+]

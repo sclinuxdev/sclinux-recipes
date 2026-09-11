@@ -1,0 +1,61 @@
+schema_version = 1
+
+[package]
+name = "expat"
+version = "2.8.4"
+release = 1
+epoch = 0
+description = "A stream-oriented XML parser library"
+license = "MIT"
+channel = "system"
+arch = "amd64"
+
+dependencies = [
+    "virtual/libc"
+]
+
+provides = [
+    "so:libexpat.so.1"
+]
+
+[source]
+url = "https://github.com/libexpat/libexpat/releases/download/R_2_8_4/expat-2.8.4.tar.xz"
+sha256 = "656ae1cc8da3b4ea513bb4e254f33e6243938084c0ec6239da873376b09985a7"
+
+[build]
+inherit = [
+    "cmake"
+]
+
+dependencies = [
+    "virtual/libc-dev",
+    "gcc16/gcc:16",
+    "gcc16/gcc-dev:16",
+    "system/cmake",
+    "system/ninja",
+    "system/pkgconf"
+]
+
+[build.args]
+cmake_args = "-DEXPAT_BUILD_TESTS=OFF -DEXPAT_BUILD_TOOLS=ON"
+
+[build.payload]
+default = "remaining"
+
+[[subpackages]]
+name = "expat-dev"
+description = "A stream-oriented XML parser library development files"
+license = "MIT"
+
+dependencies = [
+    "expat = 2.8.4-1"
+]
+
+[subpackages.payload]
+files = [
+    "usr/include/**",
+    "usr/lib/*.so",
+    "usr/lib/*.a",
+    "usr/lib/pkgconfig/**",
+    "usr/lib/cmake/**"
+]

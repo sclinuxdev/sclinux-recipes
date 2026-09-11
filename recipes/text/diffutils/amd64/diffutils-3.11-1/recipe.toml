@@ -1,0 +1,29 @@
+schema_version = 1
+
+[package]
+name = "diffutils"
+version = "3.11"
+release = 1
+epoch = 0
+description = "Show differences between files"
+license = "GPL-3.0-or-later"
+channel = "system"
+arch = "amd64"
+
+dependencies = [
+    "virtual/libc"
+]
+
+[source]
+url = "https://ftp.gnu.org/gnu/diffutils/diffutils-3.11.tar.xz"
+sha256 = "a73ef05fe37dd585f7d87068e4a0639760419f810138bd75c61ddaa1f9e2131e"
+
+[build]
+inherit = ["custom"]
+
+[build.args]
+compile_cmd = "./configure --prefix=/usr && make -j${JOBS}"
+install_cmd = './configure --prefix=/usr && make -j${JOBS} && make DESTDIR=${DESTDIR} install'
+
+[build.payload]
+default = "remaining"

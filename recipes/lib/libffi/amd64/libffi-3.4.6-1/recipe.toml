@@ -1,0 +1,73 @@
+schema_version = 1
+
+[package]
+name = "libffi"
+version = "3.4.6"
+release = 1
+epoch = 0
+description = "A portable foreign-function interface library"
+license = "MIT"
+channel = "system"
+arch = "amd64"
+
+dependencies = [
+    "system/libffi-libs >= 3.4.6-1"
+]
+
+[source]
+url = "https://github.com/libffi/libffi/releases/download/v3.4.6/libffi-3.4.6.tar.gz"
+sha256 = "b0dea9df23c863a7a50e825440f3ebffabd65df1497108e5d437747843895a4e"
+
+[build]
+inherit = ["custom"]
+
+dependencies = [
+    "virtual/libc-dev",
+    "system/make",
+    "gcc16/gcc:16",
+    "gcc16/gcc-dev:16"
+]
+
+[build.args]
+install_cmd = "./configure --prefix=/usr --disable-static && make -j${JOBS} && make DESTDIR=${DESTDIR} install"
+
+[build.payload]
+default = "remaining"
+
+[[subpackages]]
+name = "libffi-libs"
+description = "libffi runtime shared library"
+license = "MIT"
+
+dependencies = [
+    "virtual/libc"
+]
+
+provides = [
+    "so:libffi.so.8"
+]
+
+[subpackages.payload]
+files = [
+    "usr/lib/*.so.*"
+]
+
+[[subpackages]]
+name = "libffi-dev"
+description = "libffi development headers and pkgconfig"
+license = "MIT"
+
+dependencies = [
+    "system/libffi-libs >= 3.4.6-1"
+]
+
+provides = [
+    "system/libffi-dev"
+]
+
+[subpackages.payload]
+files = [
+    "usr/include/**",
+    "usr/lib/*.so",
+    "usr/lib/pkgconfig/**"
+]

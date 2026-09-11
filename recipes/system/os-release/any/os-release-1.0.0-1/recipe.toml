@@ -1,0 +1,37 @@
+schema_version = 1
+
+[package]
+name = "os-release"
+version = "1.0.0"
+release = 1
+epoch = 0
+description = "Operating system identification files for sclinux rolling release"
+license = "BSD-2-Clause"
+channel = "system"
+arch = "any"
+
+dependencies = [
+    "virtual/filesystem"
+]
+
+provides = [
+    "virtual/os-release"
+]
+
+[install]
+directories = [
+    { path = "etc" },
+    { path = "usr/lib" }
+]
+
+files = [
+    { path = "usr/lib/os-release", content = "NAME=\"sclinux\"\nPRETTY_NAME=\"sclinux\"\nID=sclinux\nHOME_URL=\"https://github.com/sclinuxdev\"\nDOCUMENTATION_URL=\"https://github.com/sclinuxdev/sage\"\nSUPPORT_URL=\"https://github.com/sclinuxdev/sage/issues\"\nBUG_REPORT_URL=\"https://github.com/sclinuxdev/sage/issues\"\nLOGO=\"sclinux\"\n" },
+    { path = "etc/issue", content = "sclinux \\r (\\l)\n\n" },
+    { path = "etc/issue.net", content = "sclinux %r (%l)\n" }
+]
+
+symlinks = [
+    { path = "etc/os-release", target = "../usr/lib/os-release" },
+    { path = "usr/lib/system-release", target = "os-release" },
+    { path = "etc/system-release", target = "../usr/lib/os-release" }
+]

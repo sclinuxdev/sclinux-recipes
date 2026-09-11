@@ -1,0 +1,74 @@
+schema_version = 1
+
+[package]
+name = "dbus"
+version = "1.16.2"
+release = 1
+epoch = 0
+description = "Message bus system and libdbus client library"
+license = "AFL-2.1 OR GPL-2.0-or-later"
+channel = "system"
+arch = "amd64"
+
+dependencies = [
+    "virtual/libc",
+    "expat",
+    "systemd-libs"
+]
+
+provides = [
+    "dbus",
+    "virtual/dbus",
+    "so:libdbus-1.so.3"
+]
+
+[source]
+url = "https://dbus.freedesktop.org/releases/dbus/dbus-1.16.2.tar.xz"
+sha256 = "0ba2a1a4b16afe7bceb2c07e9ce99a8c2c3508e5dec290dbb643384bd6beb7e2"
+
+[build]
+inherit = [
+    "autotools"
+]
+
+dependencies = [
+    "virtual/libc-dev",
+    "gcc16/gcc:16",
+    "gcc16/gcc-dev:16",
+    "system/pkgconf",
+    "system/make",
+    "system/autoconf",
+    "system/automake",
+    "system/libtool",
+    "system/systemd-dev",
+    "python3.14/python:3.14"
+]
+
+[build.args]
+configure_args = "--prefix=/usr --sysconfdir=/etc --localstatedir=/var --libexecdir=/usr/lib/dbus-1.0 --runstatedir=/run --with-dbus-user=dbus --with-system-pid-file=/run/dbus/pid --with-system-socket=/run/dbus/system_bus_socket --with-systemdsystemunitdir=/usr/lib/systemd/system --enable-inotify --disable-libaudit --enable-systemd --enable-user-session --disable-static --without-x"
+
+[build.payload]
+default = "remaining"
+
+[[sysusers]]
+name = "dbus"
+type = "user"
+id = 81
+
+[[subpackages]]
+name = "dbus-dev"
+description = "Message bus system and libdbus client library development files"
+license = "AFL-2.1 OR GPL-2.0-or-later"
+
+dependencies = [
+    "dbus = 1.16.2-1"
+]
+
+[subpackages.payload]
+files = [
+    "usr/include/**",
+    "usr/lib/*.so",
+    "usr/lib/*.a",
+    "usr/lib/pkgconfig/**",
+    "usr/lib/cmake/**"
+]

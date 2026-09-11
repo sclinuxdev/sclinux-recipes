@@ -1,0 +1,68 @@
+schema_version = 1
+
+[package]
+name = "wayland"
+version = "1.26.0"
+release = 1
+epoch = 0
+description = "Core Wayland display protocol libraries and scanner"
+license = "MIT"
+channel = "system"
+arch = "amd64"
+
+dependencies = [
+    "virtual/libc",
+    "libffi",
+    "expat",
+    "libxml2"
+]
+
+provides = [
+    "wayland-client",
+    "wayland-server",
+    "so:libwayland-client.so.0",
+    "so:libwayland-server.so.0"
+]
+
+[source]
+url = "https://gitlab.freedesktop.org/wayland/wayland/-/releases/1.26.0/downloads/wayland-1.26.0.tar.xz"
+sha256 = "64176eaa46e4969903e286f8e5ef8331affc17fdf03ac9b58381d2b23162b7a3"
+
+[build]
+inherit = [
+    "meson"
+]
+
+dependencies = [
+    "virtual/libc-dev",
+    "gcc16/gcc:16",
+    "gcc16/gcc-dev:16",
+    "system/pkgconf",
+    "system/libffi-dev",
+    "system/expat-dev",
+    "system/libxml2-dev"
+]
+
+[build.args]
+meson_args = "-Dtests=false -Ddocumentation=false"
+
+[build.payload]
+default = "remaining"
+
+[[subpackages]]
+name = "wayland-dev"
+description = "Core Wayland display protocol libraries and scanner development files"
+license = "MIT"
+
+dependencies = [
+    "wayland = 1.26.0-1"
+]
+
+[subpackages.payload]
+files = [
+    "usr/include/**",
+    "usr/lib/*.so",
+    "usr/lib/*.a",
+    "usr/lib/pkgconfig/**",
+    "usr/lib/cmake/**"
+]

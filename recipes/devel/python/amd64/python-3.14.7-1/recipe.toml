@@ -1,0 +1,64 @@
+schema_version = 1
+
+[package]
+name = "python"
+version = "3.14.7"
+release = 1
+epoch = 0
+description = "Next generation Python 3.14 programming language"
+license = "PSF-2.0"
+channel = "python3.14"
+slot = "3.14"
+arch = "amd64"
+
+dependencies = [
+    "virtual/libc",
+    "system/libffi-libs >= 3.4.6-1",
+    "system/zlib-libs >= 1.3.1-1",
+    "system/openssl-libs >= 3.4.1-1"
+]
+
+provides = [
+    "virtual/python"
+]
+
+[[sources]]
+url = "https://www.python.org/ftp/python/3.14.7/Python-3.14.7.tar.xz"
+sha256 = "3b48dac8fb59f62eaa67ac83c1eb12bda1b7a08406dd286e252c11a66be27f81"
+
+[[sources]]
+kind = "file"
+url = "https://files.pythonhosted.org/packages/62/a1/3d680cbfd5f4b8f15abc1d571870c5fc3e594bb582bc3b64ea099db13e56/jinja2-3.1.6-py3-none-any.whl"
+sha256 = "85ece4451f492d0c13c5dd7c13a64681a86afae63a5f347908daf103ce6d2f67"
+destination = "wheels/jinja2.whl"
+
+[[sources]]
+kind = "archive"
+url = "https://files.pythonhosted.org/packages/7e/99/7690b6d4034fffd95959cbe0c02de8deb3098cc577c67bb6a24fe5d7caa7/markupsafe-3.0.3.tar.gz"
+sha256 = "722695808f4b6457b320fdc131280796bdceb04ab50fe1795cd540799ebe1698"
+strip_components = 1
+destination = "markupsafe"
+
+[[sources]]
+kind = "file"
+url = "https://files.pythonhosted.org/packages/46/2a/f9697576603dae937727827505a6126a066affb227034e77e6f9068910da/pyelftools-0.33-py3-none-any.whl"
+sha256 = "f215ad5f47d3f1373a21496a6c9e0707c622840d0622f23ff7ce08678b020036"
+destination = "wheels/pyelftools.whl"
+
+[build]
+inherit = ["custom"]
+
+dependencies = [
+    "virtual/libc-dev",
+    "gcc16/gcc:16",
+    "gcc16/gcc-dev:16",
+    "system/libffi-dev >= 3.4.6-1",
+    "system/zlib-dev >= 1.3.1-1",
+    "system/openssl-dev >= 3.4.1-1"
+]
+
+[build.args]
+install_cmd = 'printf "*disabled*\\n_sqlite3\\n_bz2\\n_lzma\\n_gdbm\\n_dbm\\n_uuid\\n_decimal\\n_curses\\n_curses_panel\\nreadline\\n_tkinter\\n" > Modules/Setup.local && ./configure --prefix=/usr --enable-shared && make -j${JOBS} && make DESTDIR=${DESTDIR} install && LD_LIBRARY_PATH=/source:${LD_LIBRARY_PATH} ./python -m zipfile -e wheels/jinja2.whl ${DESTDIR}/usr/lib/python3.14/site-packages && LD_LIBRARY_PATH=/source:${LD_LIBRARY_PATH} ./python -m zipfile -e wheels/pyelftools.whl ${DESTDIR}/usr/lib/python3.14/site-packages && cp -r --no-preserve=ownership markupsafe/src/markupsafe ${DESTDIR}/usr/lib/python3.14/site-packages/'
+
+[build.payload]
+default = "remaining"

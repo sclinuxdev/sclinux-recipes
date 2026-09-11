@@ -1,0 +1,73 @@
+schema_version = 1
+
+[package]
+name = "pango"
+version = "1.58.2"
+release = 1
+epoch = 0
+description = "Internationalized text layout and rendering library"
+license = "LGPL-2.0-or-later"
+channel = "system"
+arch = "amd64"
+
+dependencies = [
+    "virtual/libc",
+    "cairo",
+    "fontconfig",
+    "freetype2",
+    "fribidi",
+    "glib2",
+    "harfbuzz"
+]
+
+provides = [
+    "so:libpango-1.0.so.0"
+]
+
+[[sources]]
+kind = "git"
+url = "https://gitlab.gnome.org/GNOME/pango.git"
+commit = "76b9566e76ee1abf6198609d8576c83b92583310"
+destination = "."
+
+[build]
+inherit = [
+    "meson"
+]
+
+dependencies = [
+    "virtual/libc-dev",
+    "gcc16/gcc:16",
+    "gcc16/gcc-dev:16",
+    "system/pkgconf",
+    "system/cairo-dev",
+    "system/fontconfig-dev",
+    "system/freetype2-dev",
+    "system/fribidi-dev",
+    "system/glib2-dev",
+    "system/harfbuzz-dev"
+]
+
+[build.args]
+meson_args = "-Dxft=disabled -Dintrospection=disabled -Dgtk_doc=disabled -Dtests=false"
+
+[build.payload]
+default = "remaining"
+
+[[subpackages]]
+name = "pango-dev"
+description = "Internationalized text layout and rendering library development files"
+license = "LGPL-2.0-or-later"
+
+dependencies = [
+    "pango = 1.58.2-1"
+]
+
+[subpackages.payload]
+files = [
+    "usr/include/**",
+    "usr/lib/*.so",
+    "usr/lib/*.a",
+    "usr/lib/pkgconfig/**",
+    "usr/lib/cmake/**"
+]

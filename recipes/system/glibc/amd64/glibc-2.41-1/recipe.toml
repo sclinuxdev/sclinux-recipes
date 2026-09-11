@@ -21,13 +21,13 @@ provides = [
 
 [source]
 url = "https://ftp.gnu.org/gnu/glibc/glibc-2.41.tar.xz"
-sha256 = "8ab580e0cf1244d470559f93db7168936b8e88bb003923c72aa0dfa77cb546c2"
+sha256 = "a5a26b22f545d6b7d7b3dd828e11e428f24f4fac43c934fb071b6a7d0828e901"
 
 [build]
-inherit = ["autotools"]
+inherit = ["custom"]
 
 [build.args]
-configure_args = "--prefix=/usr --enable-kernel=5.4 --enable-stack-protector=strong --disable-profile --disable-werror"
+install_cmd = 'mkdir -p /build && cd /build && CFLAGS="-O2 -march=x86-64 -pipe" CXXFLAGS="-O2 -march=x86-64 -pipe" ${SRC_DIR}/configure --prefix=/usr --enable-kernel=5.4 --enable-stack-protector=strong --disable-profile --disable-werror && make -j${JOBS} && make DESTDIR=${DESTDIR} install'
 
 [build.payload]
 default = "remaining"
@@ -56,6 +56,10 @@ license = "LGPL-2.1-or-later"
 
 dependencies = [
     "glibc-libs = 2.41-1"
+]
+
+provides = [
+    "virtual/libc-dev"
 ]
 
 [subpackages.payload]

@@ -1,0 +1,73 @@
+schema_version = 1
+
+[package]
+name = "util-linux"
+version = "2.42.3"
+release = 1
+epoch = 0
+description = "Essential miscellaneous system utilities for Linux"
+license = "GPL-2.0-or-later AND LGPL-2.1-or-later AND BSD-3-Clause"
+channel = "system"
+arch = "amd64"
+
+dependencies = [
+    "virtual/libc",
+    "util-linux-libs = 2.42.3-1",
+    "ncurses-libs >= 6.6-1",
+    "libcap-libs >= 2.78-1"
+]
+
+provides = [
+    "util-linux"
+]
+
+[source]
+url = "https://mirrors.edge.kernel.org/pub/linux/utils/util-linux/v2.42/util-linux-2.42.3.tar.xz"
+sha256 = "66ac7c0e725278eb2b039e3104f2c91119341d941b41bac7a285c695f940bd57"
+
+[build]
+inherit = ["autotools"]
+
+[build.args]
+configure_args = "--disable-chfn-chsh --disable-login --disable-nologin --disable-su --disable-setpriv --disable-runuser --without-systemd --without-systemdsystemunitdir --enable-libmount-support-mtab=no --disable-use-tty-group --disable-makeinstall-chown --disable-makeinstall-setuid"
+
+[build.payload]
+default = "remaining"
+
+[[subpackages]]
+name = "util-linux-libs"
+description = "util-linux core runtime shared libraries (blkid, uuid, mount, smartcols, fdisk)"
+license = "LGPL-2.1-or-later AND BSD-3-Clause"
+
+dependencies = [
+    "virtual/libc"
+]
+
+provides = [
+    "so:libblkid.so.1",
+    "so:libuuid.so.1",
+    "so:libmount.so.1",
+    "so:libsmartcols.so.1",
+    "so:libfdisk.so.1"
+]
+
+[subpackages.payload]
+files = [
+    "usr/lib/*.so.*"
+]
+
+[[subpackages]]
+name = "util-linux-dev"
+description = "util-linux development headers and pkgconfig files"
+license = "LGPL-2.1-or-later AND BSD-3-Clause"
+
+dependencies = [
+    "util-linux-libs = 2.42.3-1"
+]
+
+[subpackages.payload]
+files = [
+    "usr/include/**",
+    "usr/lib/*.so",
+    "usr/lib/pkgconfig/*.pc"
+]

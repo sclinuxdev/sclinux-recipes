@@ -1,0 +1,36 @@
+schema_version = 1
+
+[package]
+name = "automake"
+version = "1.17"
+release = 1
+epoch = 0
+description = "Tool for automatically generating Makefile.in files"
+license = "GPL-2.0-or-later"
+channel = "system"
+arch = "any"
+
+dependencies = [
+    "system/autoconf >= 2.72-1",
+    "system/perl >= 5.40.1-1",
+    "virtual/sh"
+]
+
+[source]
+url = "https://ftp.gnu.org/gnu/automake/automake-1.17.tar.xz"
+sha256 = "8920c1fc411e13b90bf704ef9db6f29d540e76d232cb3b2c9f4dc4cc599bd990"
+
+[build]
+inherit = ["custom"]
+
+dependencies = [
+    "system/autoconf >= 2.72-1",
+    "system/perl >= 5.40.1-1"
+]
+
+[build.args]
+compile_cmd = "./configure --prefix=/usr && make -j${JOBS}"
+install_cmd = './configure --prefix=/usr && make -j${JOBS} && make DESTDIR=${DESTDIR} install'
+
+[build.payload]
+default = "remaining"

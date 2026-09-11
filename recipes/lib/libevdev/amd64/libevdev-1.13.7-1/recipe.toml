@@ -1,0 +1,59 @@
+schema_version = 1
+
+[package]
+name = "libevdev"
+version = "1.13.7"
+release = 1
+epoch = 0
+description = "Linux evdev device event processing library"
+license = "MIT"
+channel = "system"
+arch = "amd64"
+
+dependencies = [
+    "virtual/libc"
+]
+
+provides = [
+    "so:libevdev.so.2"
+]
+
+[source]
+url = "https://freedesktop.org/software/libevdev/libevdev-1.13.7.tar.xz"
+sha256 = "0caf824971108f15bb2ad356433bae198d7d3bf1e82d43f63626e069e060bfa6"
+
+[build]
+inherit = [
+    "meson"
+]
+
+dependencies = [
+    "virtual/libc-dev",
+    "gcc16/gcc:16",
+    "gcc16/gcc-dev:16",
+    "system/pkgconf"
+]
+
+[build.args]
+meson_args = "-Ddocumentation=disabled -Dtests=disabled"
+
+[build.payload]
+default = "remaining"
+
+[[subpackages]]
+name = "libevdev-dev"
+description = "Linux evdev device event processing library development files"
+license = "MIT"
+
+dependencies = [
+    "libevdev = 1.13.7-1"
+]
+
+[subpackages.payload]
+files = [
+    "usr/include/**",
+    "usr/lib/*.so",
+    "usr/lib/*.a",
+    "usr/lib/pkgconfig/**",
+    "usr/lib/cmake/**"
+]

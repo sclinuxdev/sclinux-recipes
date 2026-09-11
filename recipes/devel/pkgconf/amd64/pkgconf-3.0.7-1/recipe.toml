@@ -1,0 +1,67 @@
+schema_version = 1
+
+[package]
+name = "pkgconf"
+version = "3.0.7"
+release = 1
+epoch = 0
+description = "Package compiler and linker metadata toolkit"
+license = "ISC"
+channel = "system"
+arch = "amd64"
+
+dependencies = [
+    "virtual/libc",
+    "pkgconf-libs = 3.0.7-1"
+]
+
+provides = [
+    "virtual/pkg-config"
+]
+
+[source]
+url = "https://distfiles.ariadne.space/pkgconf/pkgconf-3.0.7.tar.xz"
+sha256 = "c926ff491cbd9a331a589160811bd97ab1749b4d5198a519338f2cdfabe6940a"
+
+[build]
+inherit = ["custom"]
+
+[build.args]
+install_cmd = './configure --prefix=/usr && make -j${JOBS} && make DESTDIR=${DESTDIR} install'
+
+[build.payload]
+default = "remaining"
+
+[[subpackages]]
+name = "pkgconf-libs"
+description = "pkgconf runtime shared library"
+license = "ISC"
+
+dependencies = [
+    "virtual/libc"
+]
+
+provides = [
+    "so:libpkgconf.so.5"
+]
+
+[subpackages.payload]
+files = [
+    "usr/lib/*.so.*"
+]
+
+[[subpackages]]
+name = "pkgconf-dev"
+description = "pkgconf development headers and pkgconfig files"
+license = "ISC"
+
+dependencies = [
+    "pkgconf-libs = 3.0.7-1"
+]
+
+[subpackages.payload]
+files = [
+    "usr/include/**",
+    "usr/lib/*.so",
+    "usr/lib/pkgconfig/*.pc"
+]

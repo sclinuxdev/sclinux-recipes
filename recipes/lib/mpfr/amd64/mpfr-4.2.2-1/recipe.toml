@@ -1,0 +1,62 @@
+schema_version = 1
+
+[package]
+name = "mpfr"
+version = "4.2.2"
+release = 1
+epoch = 0
+description = "Multiple-precision floating-point computation library"
+license = "LGPL-3.0-or-later"
+channel = "system"
+arch = "amd64"
+
+dependencies = [
+    "virtual/libc",
+    "mpfr-libs = 4.2.2-1"
+]
+
+[source]
+url = "https://ftp.gnu.org/gnu/mpfr/mpfr-4.2.2.tar.xz"
+sha256 = "b67ba0383ef7e8a8563734e2e889ef5ec3c3b898a01d00fa0a6869ad81c6ce01"
+
+[build]
+inherit = ["autotools"]
+
+[build.payload]
+default = "remaining"
+
+[[subpackages]]
+name = "mpfr-libs"
+description = "Multiple-precision floating-point runtime shared library"
+license = "LGPL-3.0-or-later"
+
+dependencies = [
+    "virtual/libc",
+    "gmp-libs >= 6.3.0-1"
+]
+
+provides = [
+    "so:libmpfr.so.6"
+]
+
+[subpackages.payload]
+files = [
+    "usr/lib/*.so.*"
+]
+
+[[subpackages]]
+name = "mpfr-dev"
+description = "Multiple-precision floating-point development headers and files"
+license = "LGPL-3.0-or-later"
+
+dependencies = [
+    "mpfr-libs = 4.2.2-1",
+    "gmp-dev"
+]
+
+[subpackages.payload]
+files = [
+    "usr/include/**",
+    "usr/lib/*.so",
+    "usr/lib/pkgconfig/*.pc"
+]

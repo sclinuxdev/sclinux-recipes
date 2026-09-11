@@ -1,0 +1,67 @@
+schema_version = 1
+
+[package]
+name = "ncurses"
+version = "6.6"
+release = 1
+epoch = 0
+description = "System V Release 4.0 curses emulation library"
+license = "MIT-open-group"
+channel = "system"
+arch = "amd64"
+
+dependencies = [
+    "virtual/libc",
+    "ncurses-libs = 6.6-1"
+]
+
+[source]
+url = "https://invisible-island.net/archives/ncurses/ncurses-6.6.tar.gz"
+sha256 = "355b4cbbed880b0381a04c46617b7656e362585d52e9cf84a67e2009b749ff11"
+
+[build]
+inherit = ["autotools"]
+
+[build.args]
+configure_args = "--with-shared --without-cxx --without-cxx-binding --enable-widec --without-debug --without-ada --enable-pc-files --with-pkg-config-libdir=/usr/lib/pkgconfig"
+
+[build.payload]
+default = "remaining"
+
+[[subpackages]]
+name = "ncurses-libs"
+description = "ncurses runtime shared libraries"
+license = "MIT-open-group"
+
+dependencies = [
+    "virtual/libc"
+]
+
+provides = [
+    "so:libncursesw.so.6",
+    "so:libformw.so.6",
+    "so:libmenuw.so.6",
+    "so:libpanelw.so.6"
+]
+
+[subpackages.payload]
+files = [
+    "usr/lib/*.so.*",
+    "usr/share/terminfo/**"
+]
+
+[[subpackages]]
+name = "ncurses-dev"
+description = "ncurses development headers and link library"
+license = "MIT-open-group"
+
+dependencies = [
+    "ncurses-libs = 6.6-1"
+]
+
+[subpackages.payload]
+files = [
+    "usr/include/**",
+    "usr/lib/*.so",
+    "usr/lib/pkgconfig/*.pc"
+]

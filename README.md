@@ -14,6 +14,8 @@ sclinux-recipes/
 ├── README.md                     # 仓库总览与维护指南
 ├── .gitignore                    # 忽略构建缓存与二进制产物
 ├── bootstrap.toml                # 全系统自举与阶段编排计划 (v1)
+├── docs/                         # 架构决策与配方维护事实文档
+│   └── MAINTENANCE_FACTS.md      # 依赖拓扑、冲突矩阵与解耦维护事实
 ├── templates/                    # 配方模板与规范速查
 │   ├── recipe.template.toml      # 完整配方声明模板
 │   └── README.md                 # 打包与 SPDX 规范速查
@@ -79,3 +81,10 @@ sage build recipes/system/glibc/amd64/glibc-2.41-1
 # 3. 按阶段执行自举全量构建 (Bootstrap Pipeline)
 sage bootstrap bootstrap.toml --output /var/cache/sage/bootstrap-pool
 ```
+
+---
+
+## 4. 维护事实与架构决策文档
+
+详细的组件切分粒度、运行时解耦论证、全局命令防碰撞矩阵及双 Init 生态隔离推演，请参阅：
+- [MAINTENANCE_FACTS.md](docs/MAINTENANCE_FACTS.md)：记录包括 `systemd-networkd` 与 `resolved` 解耦事实、`systemd` 与 `eudev` 互斥原因、`shadow` 三段式拆分、命令权威归属矩阵及自举环解法等核心决策。

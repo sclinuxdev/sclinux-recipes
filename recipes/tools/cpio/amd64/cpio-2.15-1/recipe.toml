@@ -1,0 +1,28 @@
+schema_version = 1
+
+[package]
+name = "cpio"
+version = "2.15"
+release = 1
+epoch = 0
+description = "Tools for creating and extracting archive files"
+license = "GPL-3.0-or-later"
+channel = "system"
+arch = "amd64"
+
+dependencies = [
+    "virtual/libc"
+]
+
+[source]
+url = "https://ftp.gnu.org/gnu/cpio/cpio-2.15.tar.bz2"
+sha256 = "937610b97c329a1ec9268553fb780037bcfff0dcffe9725ebc4fd9c1aa9075db"
+
+[build]
+inherit = ["custom"]
+
+[build.args]
+install_cmd = 'CFLAGS="${CFLAGS} -std=gnu17" ./configure --prefix=/usr && make -j${JOBS} && make DESTDIR=${DESTDIR} install && rm -f ${DESTDIR}/usr/libexec/rmt ${DESTDIR}/usr/share/man/man8/rmt.8'
+
+[build.payload]
+default = "remaining"

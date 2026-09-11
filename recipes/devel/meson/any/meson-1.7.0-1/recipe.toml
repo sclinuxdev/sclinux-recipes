@@ -1,0 +1,41 @@
+schema_version = 1
+
+[package]
+name = "meson"
+version = "1.7.0"
+release = 1
+epoch = 0
+description = "Fast and user friendly build system"
+license = "Apache-2.0"
+channel = "system"
+arch = "any"
+
+dependencies = [
+    "python3.14/python:3.14",
+    "system/ninja"
+]
+
+provides = [
+    "system/meson"
+]
+
+[source]
+url = "https://github.com/mesonbuild/meson/releases/download/1.7.0/meson-1.7.0.tar.gz"
+sha256 = "08efbe84803eed07f863b05092d653a9d348f7038761d900412fddf56deb0284"
+
+[build]
+inherit = ["custom"]
+
+dependencies = [
+    "python3.14/python:3.14"
+]
+
+[build.args]
+compile_cmd = "true"
+install_cmd = """mkdir -p "${DESTDIR}/usr/share/meson" "${DESTDIR}/usr/bin"
+cp -r --no-preserve=ownership mesonbuild "${DESTDIR}/usr/share/meson/"
+install -m755 meson.py "${DESTDIR}/usr/share/meson/meson.py"
+ln -sr "${DESTDIR}/usr/share/meson/meson.py" "${DESTDIR}/usr/bin/meson""""
+
+[build.payload]
+default = "remaining"

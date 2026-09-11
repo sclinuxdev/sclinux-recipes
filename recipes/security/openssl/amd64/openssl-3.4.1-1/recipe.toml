@@ -1,0 +1,75 @@
+schema_version = 1
+
+[package]
+name = "openssl"
+version = "3.4.1"
+release = 1
+epoch = 0
+description = "Robust, commercial-grade TLS and cryptographic tools"
+license = "Apache-2.0"
+channel = "system"
+arch = "amd64"
+
+dependencies = [
+    "system/openssl-libs >= 3.4.1-1"
+]
+
+[source]
+url = "https://github.com/openssl/openssl/releases/download/openssl-3.4.1/openssl-3.4.1.tar.gz"
+sha256 = "002a2d6b30b58bf4bea46c43bdd96365aaf8daa6c428782aa4feee06da197df3"
+
+[build]
+inherit = ["custom"]
+
+dependencies = [
+    "system/perl >= 5.40.1-1"
+]
+
+[build.args]
+compile_cmd = "./config --prefix=/usr --openssldir=/etc/ssl --libdir=lib shared zlib-dynamic && make -j${JOBS}"
+install_cmd = './config --prefix=/usr --openssldir=/etc/ssl shared && make -j${JOBS} && make DESTDIR=${DESTDIR} install_sw'
+
+[build.payload]
+default = "remaining"
+
+[[subpackages]]
+name = "openssl-libs"
+description = "OpenSSL runtime cryptography libraries"
+license = "Apache-2.0"
+
+dependencies = [
+    "virtual/libc"
+]
+
+provides = [
+    "so:libssl.so.3",
+    "so:libcrypto.so.3"
+]
+
+[subpackages.payload]
+files = [
+    "usr/lib/*.so.*",
+    "usr/lib/engines-3/**",
+    "usr/lib/ossl-modules/**"
+]
+
+[[subpackages]]
+name = "openssl-dev"
+description = "OpenSSL development headers, static libraries and pkgconfig"
+license = "Apache-2.0"
+
+dependencies = [
+    "system/openssl-libs >= 3.4.1-1"
+]
+
+provides = [
+    "system/openssl-dev"
+]
+
+[subpackages.payload]
+files = [
+    "usr/include/**",
+    "usr/lib/*.a",
+    "usr/lib/*.so",
+    "usr/lib/pkgconfig/**"
+]

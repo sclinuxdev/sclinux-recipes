@@ -1,0 +1,63 @@
+schema_version = 1
+
+[package]
+name = "libxml2"
+version = "2.15.4"
+release = 1
+epoch = 0
+description = "XML parsing and serialization library"
+license = "MIT"
+channel = "system"
+arch = "amd64"
+
+dependencies = [
+    "virtual/libc",
+    "system/readline",
+    "system/zlib"
+]
+
+provides = [
+    "so:libxml2.so.16"
+]
+
+[source]
+url = "https://download.gnome.org/sources/libxml2/2.15/libxml2-2.15.4.tar.xz"
+sha256 = "98087fd181d9070724f3fbc65c7377db03038eb92bd882374daff44940138821"
+
+[build]
+inherit = [
+    "meson"
+]
+
+dependencies = [
+    "virtual/libc-dev",
+    "gcc16/gcc:16",
+    "gcc16/gcc-dev:16",
+    "system/pkgconf",
+    "system/zlib-dev",
+    "system/readline-dev"
+]
+
+[build.args]
+meson_args = "-Dicu=disabled -Dpython=disabled -Ddocs=disabled -Dtests=disabled"
+
+[build.payload]
+default = "remaining"
+
+[[subpackages]]
+name = "libxml2-dev"
+description = "XML parsing and serialization library development files"
+license = "MIT"
+
+dependencies = [
+    "libxml2 = 2.15.4-1"
+]
+
+[subpackages.payload]
+files = [
+    "usr/include/**",
+    "usr/lib/*.so",
+    "usr/lib/*.a",
+    "usr/lib/pkgconfig/**",
+    "usr/lib/cmake/**"
+]

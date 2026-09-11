@@ -1,0 +1,64 @@
+schema_version = 1
+
+[package]
+name = "libcap"
+version = "2.78"
+release = 1
+epoch = 0
+description = "POSIX 1003.1e capabilities library and tools"
+license = "BSD-3-Clause OR GPL-2.0-only"
+channel = "system"
+arch = "amd64"
+
+dependencies = [
+    "virtual/libc",
+    "libcap-libs = 2.78-1"
+]
+
+[source]
+url = "https://mirrors.edge.kernel.org/pub/linux/libs/security/linux-privs/libcap2/libcap-2.78.tar.xz"
+sha256 = "0d621e562fd932ccf67b9660fb018e468a683d7b827541df27813228c996bb11"
+
+[build]
+inherit = ["custom"]
+
+[build.args]
+install_cmd = 'make -j${JOBS} prefix=/usr lib=lib && make prefix=/usr lib=lib DESTDIR=${DESTDIR} install'
+
+[build.payload]
+default = "remaining"
+
+[[subpackages]]
+name = "libcap-libs"
+description = "POSIX 1003.1e capabilities runtime shared library"
+license = "BSD-3-Clause OR GPL-2.0-only"
+
+dependencies = [
+    "virtual/libc"
+]
+
+provides = [
+    "so:libcap.so.2",
+    "so:libpsx.so.2"
+]
+
+[subpackages.payload]
+files = [
+    "usr/lib/*.so.*"
+]
+
+[[subpackages]]
+name = "libcap-dev"
+description = "POSIX 1003.1e capabilities development headers and link library"
+license = "BSD-3-Clause OR GPL-2.0-only"
+
+dependencies = [
+    "libcap-libs = 2.78-1"
+]
+
+[subpackages.payload]
+files = [
+    "usr/include/**",
+    "usr/lib/*.so",
+    "usr/lib/pkgconfig/*.pc"
+]

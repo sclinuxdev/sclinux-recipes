@@ -1,0 +1,60 @@
+schema_version = 1
+
+[package]
+name = "mtdev"
+version = "1.1.7"
+release = 1
+epoch = 0
+description = "Multitouch protocol translation library"
+license = "MIT"
+channel = "system"
+arch = "amd64"
+
+dependencies = [
+    "virtual/libc"
+]
+
+provides = [
+    "so:libmtdev.so.1"
+]
+
+[source]
+url = "https://bitmath.org/code/mtdev/mtdev-1.1.7.tar.bz2"
+sha256 = "a107adad2101fecac54ac7f9f0e0a0dd155d954193da55c2340c97f2ff1d814e"
+
+[build]
+inherit = [
+    "custom"
+]
+
+dependencies = [
+    "virtual/libc-dev",
+    "gcc16/gcc:16",
+    "gcc16/gcc-dev:16",
+    "system/pkgconf",
+    "system/make"
+]
+
+[build.args]
+install_cmd = "./configure --prefix=/usr && make -j${JOBS} && make DESTDIR=${DESTDIR} install"
+
+[build.payload]
+default = "remaining"
+
+[[subpackages]]
+name = "mtdev-dev"
+description = "Multitouch protocol translation library development files"
+license = "MIT"
+
+dependencies = [
+    "mtdev = 1.1.7-1"
+]
+
+[subpackages.payload]
+files = [
+    "usr/include/**",
+    "usr/lib/*.so",
+    "usr/lib/*.a",
+    "usr/lib/pkgconfig/**",
+    "usr/lib/cmake/**"
+]

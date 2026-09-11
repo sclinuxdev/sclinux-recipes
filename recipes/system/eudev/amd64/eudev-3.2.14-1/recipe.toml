@@ -1,0 +1,73 @@
+schema_version = 1
+
+[package]
+name = "eudev"
+version = "3.2.14"
+release = 1
+epoch = 0
+description = "Standalone device management daemon and library"
+license = "GPL-2.0-or-later AND LGPL-2.1-or-later"
+channel = "system"
+arch = "amd64"
+
+dependencies = [
+    "virtual/libc",
+    "eudev-libs = 3.2.14-1",
+    "kmod-libs >= 34.2-1"
+]
+
+provides = [
+    "virtual/udev"
+]
+
+conflicts = [
+    "systemd",
+    "systemd-udev"
+]
+
+[source]
+url = "https://github.com/eudev-project/eudev/releases/download/v3.2.14/eudev-3.2.14.tar.gz"
+sha256 = "8da4319102f24abbf7fff5ce9c416af848df163b29590e666d334cc1927f006f"
+
+[build]
+inherit = ["autotools"]
+
+[build.args]
+configure_args = "--enable-kmod --enable-hwdb --disable-selinux"
+
+[build.payload]
+default = "remaining"
+
+[[subpackages]]
+name = "eudev-libs"
+description = "eudev device management runtime shared library"
+license = "LGPL-2.1-or-later"
+
+dependencies = [
+    "virtual/libc"
+]
+
+provides = [
+    "so:libudev.so.1"
+]
+
+[subpackages.payload]
+files = [
+    "usr/lib/*.so.*"
+]
+
+[[subpackages]]
+name = "eudev-dev"
+description = "eudev device management development headers and pkgconfig files"
+license = "LGPL-2.1-or-later"
+
+dependencies = [
+    "eudev-libs = 3.2.14-1"
+]
+
+[subpackages.payload]
+files = [
+    "usr/include/**",
+    "usr/lib/*.so",
+    "usr/lib/pkgconfig/*.pc"
+]

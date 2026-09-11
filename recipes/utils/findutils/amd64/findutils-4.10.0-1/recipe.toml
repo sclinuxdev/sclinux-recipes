@@ -1,0 +1,29 @@
+schema_version = 1
+
+[package]
+name = "findutils"
+version = "4.10.0"
+release = 1
+epoch = 0
+description = "Utilities for finding files"
+license = "GPL-3.0-or-later"
+channel = "system"
+arch = "amd64"
+
+dependencies = [
+    "virtual/libc"
+]
+
+[source]
+url = "https://ftp.gnu.org/gnu/findutils/findutils-4.10.0.tar.xz"
+sha256 = "1387e0b67ff247d2abde998f90dfbf70c1491391a59ddfecb8ae698789f0a4f5"
+
+[build]
+inherit = ["custom"]
+
+[build.args]
+compile_cmd = "./configure --prefix=/usr --localstatedir=/var/lib/locate && make -j${JOBS}"
+install_cmd = './configure --prefix=/usr && make -j${JOBS} && make DESTDIR=${DESTDIR} install'
+
+[build.payload]
+default = "remaining"

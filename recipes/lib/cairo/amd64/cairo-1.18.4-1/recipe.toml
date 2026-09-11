@@ -1,0 +1,73 @@
+schema_version = 1
+
+[package]
+name = "cairo"
+version = "1.18.4"
+release = 1
+epoch = 0
+description = "2D graphics library with multiple output backends"
+license = "LGPL-2.1-or-later OR MPL-1.1"
+channel = "system"
+arch = "amd64"
+
+dependencies = [
+    "virtual/libc",
+    "fontconfig",
+    "freetype2",
+    "glib2",
+    "libpng",
+    "pixman",
+    "system/zlib"
+]
+
+provides = [
+    "so:libcairo.so.2"
+]
+
+[[sources]]
+kind = "git"
+url = "https://gitlab.freedesktop.org/cairo/cairo.git"
+commit = "7f3ad250e06b422010635abefb5e58eb1d8af4c1"
+destination = "."
+
+[build]
+inherit = [
+    "meson"
+]
+
+dependencies = [
+    "virtual/libc-dev",
+    "gcc16/gcc:16",
+    "gcc16/gcc-dev:16",
+    "system/pkgconf",
+    "system/fontconfig-dev",
+    "system/freetype2-dev",
+    "system/glib2-dev",
+    "system/libpng-dev",
+    "system/pixman-dev",
+    "system/zlib-dev"
+]
+
+[build.args]
+meson_args = "-Dxlib=disabled -Dxcb=disabled -Dxlib-xcb=disabled -Dtests=disabled -Dgtk_doc=disabled"
+
+[build.payload]
+default = "remaining"
+
+[[subpackages]]
+name = "cairo-dev"
+description = "2D graphics library with multiple output backends development files"
+license = "LGPL-2.1-or-later OR MPL-1.1"
+
+dependencies = [
+    "cairo = 1.18.4-1"
+]
+
+[subpackages.payload]
+files = [
+    "usr/include/**",
+    "usr/lib/*.so",
+    "usr/lib/*.a",
+    "usr/lib/pkgconfig/**",
+    "usr/lib/cmake/**"
+]

@@ -1,0 +1,38 @@
+schema_version = 1
+
+[package]
+name = "perl"
+version = "5.40.1"
+release = 1
+epoch = 0
+description = "Practical Extraction and Report Language"
+license = "Artistic-1.0-Perl OR GPL-1.0-or-later"
+channel = "system"
+arch = "amd64"
+
+dependencies = [
+    "virtual/libc",
+    "system/zlib-libs >= 1.3.1-1"
+]
+
+provides = [
+    "so:libperl.so"
+]
+
+[source]
+url = "https://www.cpan.org/src/5.0/perl-5.40.1.tar.xz"
+sha256 = "dfa20c2eef2b4af133525610bbb65dd13777ecf998c9c5b1ccf0d308e732ee3f"
+
+[build]
+inherit = ["custom"]
+
+dependencies = [
+    "system/zlib-dev >= 1.3.1-1"
+]
+
+[build.args]
+compile_cmd = 'sh Configure -des -Dprefix=/usr -Dvendorprefix=/usr -Duseithreads -Duseshrplib -Dnoextensions="GDBM_File NDBM_File ODBM_File DB_File" -Dlibswanted="m c dl" && make -j${JOBS}'
+install_cmd = 'sh Configure -des -Dprefix=/usr -Dvendorprefix=/usr -Duseithreads -Duseshrplib -Dnoextensions="GDBM_File NDBM_File ODBM_File DB_File" -Dlibswanted="m c dl" && make -j${JOBS} && make DESTDIR=${DESTDIR} install && ln -sf perl5/5.40.1/x86_64-linux-thread-multi/CORE/libperl.so ${DESTDIR}/usr/lib/libperl.so'
+
+[build.payload]
+default = "remaining"

@@ -1,0 +1,70 @@
+schema_version = 1
+
+[package]
+name = "shadow"
+version = "4.20.2"
+release = 1
+epoch = 0
+description = "Password and account management utilities"
+license = "BSD-3-Clause"
+channel = "system"
+arch = "amd64"
+
+dependencies = [
+    "virtual/libc",
+    "shadow-libs = 4.20.2-1",
+    "pam"
+]
+
+provides = [
+    "shadow"
+]
+
+[source]
+url = "https://github.com/shadow-maint/shadow/releases/download/4.20.2/shadow-4.20.2.tar.xz"
+sha256 = "b89f432b75ae55a2d852b446d0365484795fdf533ab97d550e325fa15594a224"
+
+[build]
+inherit = ["autotools"]
+dependencies = [
+    "system/pam-dev"
+]
+
+[build.args]
+configure_args = "--without-audit --without-selinux --with-libpam --with-bcrypt --with-yescrypt"
+
+[build.payload]
+default = "remaining"
+
+[[subpackages]]
+name = "shadow-libs"
+description = "Shadow subid runtime shared library"
+license = "BSD-3-Clause"
+
+dependencies = [
+    "virtual/libc"
+]
+
+provides = [
+    "so:libsubid.so.5"
+]
+
+[subpackages.payload]
+files = [
+    "usr/lib/*.so.*"
+]
+
+[[subpackages]]
+name = "shadow-dev"
+description = "Shadow subid development headers and library"
+license = "BSD-3-Clause"
+
+dependencies = [
+    "shadow-libs = 4.20.2-1"
+]
+
+[subpackages.payload]
+files = [
+    "usr/include/**",
+    "usr/lib/*.so"
+]

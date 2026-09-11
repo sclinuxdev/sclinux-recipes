@@ -1,0 +1,59 @@
+schema_version = 1
+
+[package]
+name = "pixman"
+version = "0.46.4"
+release = 1
+epoch = 0
+description = "Low-level pixel manipulation library"
+license = "MIT"
+channel = "system"
+arch = "amd64"
+
+dependencies = [
+    "virtual/libc"
+]
+
+provides = [
+    "so:libpixman-1.so.0"
+]
+
+[source]
+url = "https://www.x.org/releases/individual/lib/pixman-0.46.4.tar.xz"
+sha256 = "a098c33924754ad43f981b740f6d576c70f9ed1006e12221b1845431ebce1239"
+
+[build]
+inherit = [
+    "meson"
+]
+
+dependencies = [
+    "virtual/libc-dev",
+    "gcc16/gcc:16",
+    "gcc16/gcc-dev:16",
+    "system/pkgconf"
+]
+
+[build.args]
+meson_args = "-Dtests=disabled"
+
+[build.payload]
+default = "remaining"
+
+[[subpackages]]
+name = "pixman-dev"
+description = "Low-level pixel manipulation library development files"
+license = "MIT"
+
+dependencies = [
+    "pixman = 0.46.4-1"
+]
+
+[subpackages.payload]
+files = [
+    "usr/include/**",
+    "usr/lib/*.so",
+    "usr/lib/*.a",
+    "usr/lib/pkgconfig/**",
+    "usr/lib/cmake/**"
+]

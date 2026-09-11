@@ -1,0 +1,35 @@
+schema_version = 1
+
+[package]
+name = "libtool"
+version = "2.5.4"
+release = 1
+epoch = 0
+description = "Generic library support script"
+license = "GPL-2.0-or-later"
+channel = "system"
+arch = "amd64"
+
+dependencies = [
+    "system/m4 >= 1.4.19-1",
+    "virtual/libc",
+    "virtual/sh"
+]
+
+[source]
+url = "https://ftp.gnu.org/gnu/libtool/libtool-2.5.4.tar.xz"
+sha256 = "f81f5860666b0bc7d84baddefa60d1cb9fa6fceb2398cc3baca6afaa60266675"
+
+[build]
+inherit = ["custom"]
+
+dependencies = [
+    "system/m4 >= 1.4.19-1"
+]
+
+[build.args]
+compile_cmd = "./configure --prefix=/usr && make -j${JOBS}"
+install_cmd = './configure --prefix=/usr && make -j${JOBS} && make DESTDIR=${DESTDIR} install'
+
+[build.payload]
+default = "remaining"

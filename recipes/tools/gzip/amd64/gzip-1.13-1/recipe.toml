@@ -1,0 +1,29 @@
+schema_version = 1
+
+[package]
+name = "gzip"
+version = "1.13"
+release = 1
+epoch = 0
+description = "GNU compression utility"
+license = "GPL-3.0-or-later"
+channel = "system"
+arch = "amd64"
+
+dependencies = [
+    "virtual/libc"
+]
+
+[source]
+url = "https://ftp.gnu.org/gnu/gzip/gzip-1.13.tar.xz"
+sha256 = "7454eb6935db17c6655576c2e1b0fabefd38b4d0936e0f87f48cd062ce91a057"
+
+[build]
+inherit = ["custom"]
+
+[build.args]
+compile_cmd = "./configure --prefix=/usr && make -j${JOBS}"
+install_cmd = './configure --prefix=/usr && make -j${JOBS} && make DESTDIR=${DESTDIR} install'
+
+[build.payload]
+default = "remaining"

@@ -1,0 +1,68 @@
+schema_version = 1
+
+[package]
+name = "procps-ng"
+version = "4.0.6"
+release = 1
+epoch = 0
+description = "Standard utilities for monitoring system processes"
+license = "GPL-2.0-or-later AND LGPL-2.1-or-later"
+channel = "system"
+arch = "amd64"
+
+dependencies = [
+    "virtual/libc",
+    "procps-ng-libs = 4.0.6-1",
+    "ncurses-libs >= 6.6-1"
+]
+
+provides = [
+    "procps-ng"
+]
+
+[source]
+url = "https://downloads.sourceforge.net/project/procps-ng/Production/procps-ng-4.0.6.tar.xz"
+sha256 = "67bea6fbc3a42a535a0230c9e891e5ddfb4d9d39422d46565a2990d1ace15216"
+
+[build]
+inherit = ["autotools"]
+
+[build.args]
+configure_args = "--disable-kill --disable-modern-top --without-systemd"
+
+[build.payload]
+default = "remaining"
+
+[[subpackages]]
+name = "procps-ng-libs"
+description = "procps-ng runtime shared library"
+license = "LGPL-2.1-or-later"
+
+dependencies = [
+    "virtual/libc"
+]
+
+provides = [
+    "so:libproc2.so.1"
+]
+
+[subpackages.payload]
+files = [
+    "usr/lib/*.so.*"
+]
+
+[[subpackages]]
+name = "procps-ng-dev"
+description = "procps-ng development headers and link library"
+license = "LGPL-2.1-or-later"
+
+dependencies = [
+    "procps-ng-libs = 4.0.6-1"
+]
+
+[subpackages.payload]
+files = [
+    "usr/include/**",
+    "usr/lib/*.so",
+    "usr/lib/pkgconfig/*.pc"
+]

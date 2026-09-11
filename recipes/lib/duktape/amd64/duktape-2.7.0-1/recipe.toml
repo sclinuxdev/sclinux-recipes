@@ -1,0 +1,60 @@
+schema_version = 1
+
+[package]
+name = "duktape"
+version = "2.7.0"
+release = 1
+epoch = 0
+description = "Embeddable Javascript engine"
+license = "MIT"
+channel = "system"
+arch = "amd64"
+
+dependencies = [
+    "virtual/libc"
+]
+
+provides = [
+    "so:libduktape.so.207"
+]
+
+[source]
+url = "https://github.com/svaarala/duktape/releases/download/v2.7.0/duktape-2.7.0.tar.xz"
+sha256 = "90f8d2fa8b5567c6899830ddef2c03f3c27960b11aca222fa17aa7ac613c2890"
+
+[build]
+inherit = [
+    "custom"
+]
+
+dependencies = [
+    "virtual/libc-dev",
+    "gcc16/gcc:16",
+    "gcc16/gcc-dev:16",
+    "system/pkgconf",
+    "system/make"
+]
+
+[build.args]
+install_cmd = "make -f Makefile.shared INSTALL_PREFIX=/usr LIBDIR=/lib -j${JOBS} && make -f Makefile.shared INSTALL_PREFIX=/usr LIBDIR=/lib DESTDIR=\"${DESTDIR}\" install"
+
+[build.payload]
+default = "remaining"
+
+[[subpackages]]
+name = "duktape-dev"
+description = "Embeddable Javascript engine development files"
+license = "MIT"
+
+dependencies = [
+    "duktape = 2.7.0-1"
+]
+
+[subpackages.payload]
+files = [
+    "usr/include/**",
+    "usr/lib/*.so",
+    "usr/lib/*.a",
+    "usr/lib/pkgconfig/**",
+    "usr/lib/cmake/**"
+]

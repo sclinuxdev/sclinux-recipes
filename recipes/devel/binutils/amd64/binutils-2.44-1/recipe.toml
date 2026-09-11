@@ -16,18 +16,18 @@ dependencies = [
 ]
 
 provides = [
-    "virtual/binutils"
+    "binutils"
 ]
 
 [source]
 url = "https://ftp.gnu.org/gnu/binutils/binutils-2.44.tar.xz"
-sha256 = "ce2635955a5b512c1b471542f7ae8e44280b263309a63319087ae70f2f0b1a0e"
+sha256 = "ce2017e059d63e67ddb9240e9d4ec49c2893605035cd60e92ad53177f4377237"
 
 [build]
 inherit = ["autotools"]
 
 [build.args]
-configure_args = "--prefix=/usr --enable-gold --enable-ld=default --enable-plugins --enable-shared --disable-werror --with-system-zlib"
+configure_args = "--prefix=/usr --enable-gold --enable-ld=default --enable-plugins --enable-shared --disable-werror --disable-gprofng --without-debuginfod --with-system-zlib"
 
 [build.payload]
 default = "remaining"

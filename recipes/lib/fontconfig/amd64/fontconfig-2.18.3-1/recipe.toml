@@ -1,0 +1,66 @@
+schema_version = 1
+
+[package]
+name = "fontconfig"
+version = "2.18.3"
+release = 1
+epoch = 0
+description = "Font configuration and customization library"
+license = "HPND AND Unicode-DFS-2016"
+channel = "system"
+arch = "amd64"
+
+dependencies = [
+    "virtual/libc",
+    "expat",
+    "freetype2"
+]
+
+provides = [
+    "so:libfontconfig.so.1"
+]
+
+[[sources]]
+kind = "git"
+url = "https://gitlab.freedesktop.org/fontconfig/fontconfig.git"
+commit = "06009a87a8ff2d7978c6032cf55d514d4ee303b1"
+destination = "."
+
+[build]
+inherit = [
+    "meson"
+]
+
+dependencies = [
+    "virtual/libc-dev",
+    "gcc16/gcc:16",
+    "gcc16/gcc-dev:16",
+    "system/pkgconf",
+    "system/expat-dev",
+    "system/freetype2-dev",
+    "system/gperf"
+]
+
+[build.args]
+meson_args = "-Ddoc=disabled -Dtests=disabled"
+
+[build.payload]
+default = "remaining"
+
+[[subpackages]]
+name = "fontconfig-dev"
+description = "Font configuration and customization library development files"
+license = "HPND AND Unicode-DFS-2016"
+
+dependencies = [
+    "fontconfig = 2.18.3-1"
+]
+
+[subpackages.payload]
+files = [
+    "usr/include/**",
+    "usr/lib/*.so",
+    "usr/lib/*.a",
+    "usr/lib/pkgconfig/**",
+    "usr/lib/cmake/**"
+]

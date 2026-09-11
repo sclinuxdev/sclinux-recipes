@@ -1,0 +1,36 @@
+schema_version = 1
+
+[package]
+name = "wayland-protocols"
+version = "1.49"
+release = 1
+epoch = 0
+description = "Wayland protocol extension definitions"
+license = "MIT"
+channel = "system"
+arch = "any"
+
+dependencies = [
+    "wayland"
+]
+
+[source]
+url = "https://gitlab.freedesktop.org/wayland/wayland-protocols/-/releases/1.49/downloads/wayland-protocols-1.49.tar.xz"
+sha256 = "ec4c8f74942d6dff7ace8b4ce4764f0ef9ff618a935d974ea77edee2ad240b14"
+
+[build]
+inherit = [
+    "meson"
+]
+
+dependencies = [
+    "system/meson",
+    "system/ninja",
+    "system/pkgconf"
+]
+
+[build.args]
+meson_args = "-Dtests=false"
+
+[build.payload]
+default = "remaining"

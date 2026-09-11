@@ -1,0 +1,32 @@
+schema_version = 1
+
+[package]
+name = "pambase"
+version = "1.0.0"
+release = 1
+epoch = 0
+description = "Default PAM policy files for local login and system services"
+license = "MIT"
+channel = "system"
+arch = "any"
+
+dependencies = [
+    "pam",
+    "systemd"
+]
+
+[[install.files]]
+path = "etc/pam.d/system-auth"
+content = "auth required pam_unix.so\naccount required pam_unix.so\npassword required pam_unix.so\nsession required pam_unix.so\n"
+
+[[install.files]]
+path = "etc/pam.d/system-login"
+content = "auth include system-auth\naccount include system-auth\npassword include system-auth\nsession include system-auth\nsession optional pam_systemd.so\n"
+
+[[install.files]]
+path = "etc/pam.d/system-local-login"
+content = "auth include system-login\naccount include system-login\npassword include system-login\nsession include system-login\n"
+
+[[install.files]]
+path = "etc/pam.d/other"
+content = "auth required pam_deny.so\naccount required pam_deny.so\npassword required pam_deny.so\nsession required pam_deny.so\n"

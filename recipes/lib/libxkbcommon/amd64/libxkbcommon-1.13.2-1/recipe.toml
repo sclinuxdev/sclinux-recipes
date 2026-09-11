@@ -1,0 +1,61 @@
+schema_version = 1
+
+[package]
+name = "libxkbcommon"
+version = "1.13.2"
+release = 1
+epoch = 0
+description = "XKB keyboard handling library for Wayland"
+license = "MIT"
+channel = "system"
+arch = "amd64"
+
+dependencies = [
+    "virtual/libc"
+]
+
+provides = [
+    "so:libxkbcommon.so.0"
+]
+
+[source]
+url = "https://github.com/xkbcommon/libxkbcommon/archive/refs/tags/xkbcommon-1.13.2.tar.gz"
+sha256 = "acc4d5f7c3cbba5f9f8d08d8bdbeede84ecede46792f47929aa9321873385528"
+
+[build]
+inherit = [
+    "cmake"
+]
+
+dependencies = [
+    "virtual/libc-dev",
+    "gcc16/gcc:16",
+    "gcc16/gcc-dev:16",
+    "system/cmake",
+    "system/ninja",
+    "system/pkgconf"
+]
+
+[build.args]
+cmake_args = "-DENABLE_X11=OFF -DENABLE_WAYLAND=ON -DENABLE_TESTS=OFF"
+
+[build.payload]
+default = "remaining"
+
+[[subpackages]]
+name = "libxkbcommon-dev"
+description = "XKB keyboard handling library for Wayland development files"
+license = "MIT"
+
+dependencies = [
+    "libxkbcommon = 1.13.2-1"
+]
+
+[subpackages.payload]
+files = [
+    "usr/include/**",
+    "usr/lib/*.so",
+    "usr/lib/*.a",
+    "usr/lib/pkgconfig/**",
+    "usr/lib/cmake/**"
+]

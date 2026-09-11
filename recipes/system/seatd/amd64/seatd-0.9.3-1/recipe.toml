@@ -1,0 +1,71 @@
+schema_version = 1
+
+[package]
+name = "seatd"
+version = "0.9.3"
+release = 1
+epoch = 0
+description = "Seat management daemon and libseat client library"
+license = "MIT"
+channel = "system"
+arch = "amd64"
+
+dependencies = [
+    "virtual/libc",
+    "systemd-libs"
+]
+
+provides = [
+    "libseat",
+    "so:libseat.so.1"
+]
+
+[source]
+url = "https://git.sr.ht/~kennylevinsen/seatd/archive/0.9.3.tar.gz"
+sha256 = "302564d54d8e28191fadfd734f2675ecb0c9e0615a58011b89ef15dfa4dbaa96"
+
+[build]
+inherit = [
+    "meson"
+]
+
+dependencies = [
+    "virtual/libc-dev",
+    "gcc16/gcc:16",
+    "gcc16/gcc-dev:16",
+    "system/pkgconf"
+]
+
+[build.args]
+meson_args = "-Dserver=enabled -Dlibseat=enabled -Dman-pages=disabled"
+
+[build.payload]
+default = "remaining"
+
+[[sysusers]]
+name = "seat"
+type = "group"
+id = 83
+
+[[sysusers]]
+name = "seatd"
+type = "user"
+id = 84
+
+[[subpackages]]
+name = "seatd-dev"
+description = "Seat management daemon and libseat client library development files"
+license = "MIT"
+
+dependencies = [
+    "seatd = 0.9.3-1"
+]
+
+[subpackages.payload]
+files = [
+    "usr/include/**",
+    "usr/lib/*.so",
+    "usr/lib/*.a",
+    "usr/lib/pkgconfig/**",
+    "usr/lib/cmake/**"
+]

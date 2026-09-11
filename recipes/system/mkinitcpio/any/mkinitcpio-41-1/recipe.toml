@@ -1,0 +1,203 @@
+schema_version = 1
+
+[package]
+name = "mkinitcpio"
+version = "41"
+release = 1
+epoch = 0
+description = "Modular initramfs image creation utility"
+license = "GPL-2.0-only"
+channel = "system"
+arch = "any"
+
+dependencies = [
+    "virtual/filesystem",
+    "system/bash",
+    "system/coreutils",
+    "system/kmod",
+    "system/util-linux",
+    "system/zstd",
+    "system/gawk",
+    "system/findutils",
+    "system/grep",
+    "system/sed",
+    "system/cpio"
+]
+
+provides = [
+    "virtual/initramfs-generator"
+]
+
+[source]
+url = "https://sources.archlinux.org/other/mkinitcpio/mkinitcpio-41.tar.xz"
+sha256 = "5102520b9fc899ec1c64eb6cd0dd75985042e714318e3b574976b7497cff5a14"
+
+[build]
+inherit = ["custom"]
+
+[build.args]
+install_cmd = """
+mkdir -p "${DESTDIR}/usr/bin"
+mkdir -p "${DESTDIR}/etc/mkinitcpio.d"
+mkdir -p "${DESTDIR}/etc/mkinitcpio.conf.d"
+mkdir -p "${DESTDIR}/usr/lib/initcpio/hooks"
+mkdir -p "${DESTDIR}/usr/lib/initcpio/install"
+mkdir -p "${DESTDIR}/usr/lib/initcpio/post"
+
+sed -e 's|@VERSION@|41|g' \
+    -e 's|@BINDIR@|/usr/bin|g' \
+    -e 's|@SYSCONFDIR@|/etc|g' \
+    -e 's|@INITCPIO_LIBDIR@|/usr/lib/initcpio|g' \
+    -e 's|@INITCPIO_SYSCONFDIR@|/etc/initcpio|g' \
+    mkinitcpio > "${DESTDIR}/usr/bin/mkinitcpio"
+chmod 755 "${DESTDIR}/usr/bin/mkinitcpio"
+
+sed -i 's/bsdtar --uid 0 --gid 0 --null -cnf - -T -/cpio --null -ov -H newc/' "${DESTDIR}/usr/bin/mkinitcpio"
+sed -i '/bsdtar --null -cf/d' "${DESTDIR}/usr/bin/mkinitcpio"
+sed -i "s/pipeprogs=('find' 'sort' 'bsdtar (step 1)' 'bsdtar (step 2)'/pipeprogs=('find' 'sort' 'cpio'/" "${DESTDIR}/usr/bin/mkinitcpio"
+
+sed -e 's|@VERSION@|41|g' \
+    -e 's|@INITCPIO_LIBDIR@|/usr/lib/initcpio|g' \
+    lsinitcpio > "${DESTDIR}/usr/bin/lsinitcpio"
+chmod 755 "${DESTDIR}/usr/bin/lsinitcpio"
+
+sed -e 's|@MKINITCPIO_HOOKS@|base udev autodetect microcode modconf kms keyboard block filesystems fsck|g' \
+    mkinitcpio.conf > "${DESTDIR}/etc/mkinitcpio.conf"
+
+cp -a functions init init_functions shutdown "${DESTDIR}/usr/lib/initcpio/"
+chmod 755 "${DESTDIR}/usr/lib/initcpio/init" "${DESTDIR}/usr/lib/initcpio/shutdown"
+
+cp -a hooks/* "${DESTDIR}/usr/lib/initcpio/hooks/"
+cp -a install/* "${DESTDIR}/usr/lib/initcpio/install/"
+
+sed -i -e 's|@UDEVD_PATH@|/usr/lib/systemd/systemd-udevd|g' \
+       -e 's|@TMPFILES_PATH@|/usr/bin/systemd-tmpfiles|g' \
+       -e 's|@VCONSOLE_CONF@|/etc/vconsole.conf|g' \
+       "${DESTDIR}/usr/lib/initcpio/hooks"/* "${DESTDIR}/usr/lib/initcpio/install"/*
+
+if [ -f /usr/lib/initcpio/busybox ]; then
+    cp -a /usr/lib/initcpio/busybox "${DESTDIR}/usr/lib/initcpio/busybox"
+    chmod 755 "${DESTDIR}/usr/lib/initcpio/busybox"
+fi
+"""
+
+[install]
+files = [
+    { path = "usr/lib/sage/initramfs-generators/mkinitcpio", mode = 493, content = """#!/usr/bin/env bash
+# mkinitcpio initramfs generator plugin for Sage
+set -euo pipefail
+
+SYSROOT="${1:-${SAGE_SYSROOT:-}}"
+ACTION_OR_KVER="${2:-}"
+
+if [ "$SYSROOT" = "/" ]; then
+    SYSROOT=""
+fi
+
+generate_for_kver() {
+    local kver="$1"
+    local mod_dir="${SYSROOT}/usr/lib/modules/${kver}"
+    local kernel_path="${mod_dir}/vmlinuz"
+
+    local pkgbase="linux"
+    if [ -f "${mod_dir}/pkgbase" ]; then
+        pkgbase="$(cat "${mod_dir}/pkgbase" | tr -d '[:space:]')"
+    fi
+
+    local preset_file=""
+    if [ -d "${SYSROOT}/etc/mkinitcpio.d" ]; then
+        for p in "${SYSROOT}/etc/mkinitcpio.d"/${pkgbase}*.preset; do
+            if [ -f "$p" ] && grep -q "$kver" "$p" 2>/dev/null; then
+                preset_file="$p"
+                break
+            fi
+        done
+        if [ -z "$preset_file" ]; then
+            for p in "${SYSROOT}/etc/mkinitcpio.d"/${pkgbase}*.preset; do
+                if [ -f "$p" ]; then
+                    preset_file="$p"
+                    break
+                fi
+            done
+        fi
+    fi
+
+    local short_kver="${kver%%-*}"
+    local target_kver=""
+    local default_image=""
+    local fallback_image=""
+    if [ -n "$preset_file" ] && [ -f "$preset_file" ]; then
+        target_kver="$(grep -E '^(ALL_kver|default_kver)=' "$preset_file" | head -n1 | cut -d'=' -f2- | tr -d '"' | tr -d "'")"
+        default_image="$(grep -E '^default_image=' "$preset_file" | head -n1 | cut -d'=' -f2- | tr -d '"' | tr -d "'")"
+        fallback_image="$(grep -E '^fallback_image=' "$preset_file" | head -n1 | cut -d'=' -f2- | tr -d '"' | tr -d "'")"
+    fi
+
+    if [ -z "$default_image" ]; then
+        default_image="/boot/initramfs-${pkgbase}-${short_kver}.img"
+    fi
+    if [ -z "$fallback_image" ]; then
+        fallback_image="/boot/initramfs-${pkgbase}-${short_kver}-fallback.img"
+    fi
+
+    if [ ! -f "$kernel_path" ]; then
+        echo ":: [mkinitcpio] Kernel $kver removed, cleaning up boot files..."
+        if [ -n "$target_kver" ] && [[ "$target_kver" == /boot/* ]]; then
+            rm -f "${SYSROOT}${target_kver}"
+        fi
+        rm -f "${SYSROOT}${default_image}"
+        rm -f "${SYSROOT}${fallback_image}"
+        return 0
+    fi
+
+    echo ":: [mkinitcpio] Processing kernel $kver (${pkgbase})..."
+    mkdir -p "${SYSROOT}/boot"
+
+    if [ -n "$target_kver" ] && [[ "$target_kver" == /boot/* ]]; then
+        echo ":: [mkinitcpio] Installing kernel to ${target_kver}..."
+        cp -f "$kernel_path" "${SYSROOT}${target_kver}"
+    elif [ -n "$preset_file" ]; then
+        local preset_name="$(basename "$preset_file" .preset)"
+        local target_boot_kernel="/boot/vmlinuz-${preset_name}"
+        echo ":: [mkinitcpio] Installing kernel to ${target_boot_kernel}..."
+        cp -f "$kernel_path" "${SYSROOT}${target_boot_kernel}"
+    fi
+
+    if [ -n "$preset_file" ]; then
+        local preset_name="$(basename "$preset_file" .preset)"
+        echo ":: [mkinitcpio] Generating initramfs for preset '${preset_name}'..."
+        if [ -f "${SYSROOT}/etc/udev/hwdb.bin" ] && [ ! -e "${SYSROOT}/usr/lib/udev/hwdb.bin" ]; then
+            ln -sf /etc/udev/hwdb.bin "${SYSROOT}/usr/lib/udev/hwdb.bin" 2>/dev/null || true
+        fi
+        if [ -n "$SYSROOT" ]; then
+            if command -v bwrap >/dev/null 2>&1; then
+                bwrap --bind "$SYSROOT" / \
+                      --proc /proc \
+                      --dev /dev \
+                      --ro-bind /sys /sys \
+                      --tmpfs /tmp \
+                      /usr/bin/mkinitcpio -p "$preset_name"
+            else
+                chroot "$SYSROOT" /usr/bin/mkinitcpio -p "$preset_name"
+            fi
+        else
+            /usr/bin/mkinitcpio -p "$preset_name"
+        fi
+    fi
+}
+
+if [ "$ACTION_OR_KVER" = "all" ] || [ -z "$ACTION_OR_KVER" ]; then
+    if [ -d "${SYSROOT}/usr/lib/modules" ]; then
+        for kdir in "${SYSROOT}/usr/lib/modules"/*; do
+            if [ -d "$kdir" ] && [ -f "${kdir}/vmlinuz" ]; then
+                generate_for_kver "$(basename "$kdir")"
+            fi
+        done
+    fi
+else
+    generate_for_kver "$ACTION_OR_KVER"
+fi
+""" }
+]
+
+[build.payload]
+default = "remaining"

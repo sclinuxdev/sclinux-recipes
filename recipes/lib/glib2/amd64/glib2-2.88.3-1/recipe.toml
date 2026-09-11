@@ -1,0 +1,71 @@
+schema_version = 1
+
+[package]
+name = "glib2"
+version = "2.88.3"
+release = 1
+epoch = 0
+description = "Low-level core library for GNOME applications"
+license = "LGPL-2.1-or-later"
+channel = "system"
+arch = "amd64"
+
+dependencies = [
+    "virtual/libc",
+    "bash",
+    "libffi",
+    "pcre2",
+    "util-linux",
+    "system/zlib"
+]
+
+provides = [
+    "glib",
+    "so:libglib-2.0.so.0",
+    "so:libgobject-2.0.so.0",
+    "so:libgio-2.0.so.0"
+]
+
+[source]
+url = "https://download.gnome.org/sources/glib/2.88/glib-2.88.3.tar.xz"
+sha256 = "ab24d24e698dfa1e408b7bcdb508f4aafc906185a8b8ce72fdf79bbbdc9b383b"
+
+[build]
+inherit = [
+    "meson"
+]
+
+dependencies = [
+    "virtual/libc-dev",
+    "gcc16/gcc:16",
+    "gcc16/gcc-dev:16",
+    "system/pkgconf",
+    "system/libffi-dev",
+    "system/pcre2-dev",
+    "system/util-linux-dev",
+    "system/zlib-dev"
+]
+
+[build.args]
+meson_args = "-Dsysprof=disabled -Ddocumentation=disabled -Dtests=false -Dintrospection=disabled"
+
+[build.payload]
+default = "remaining"
+
+[[subpackages]]
+name = "glib2-dev"
+description = "Low-level core library for GNOME applications development files"
+license = "LGPL-2.1-or-later"
+
+dependencies = [
+    "glib2 = 2.88.3-1"
+]
+
+[subpackages.payload]
+files = [
+    "usr/include/**",
+    "usr/lib/*.so",
+    "usr/lib/*.a",
+    "usr/lib/pkgconfig/**",
+    "usr/lib/cmake/**"
+]

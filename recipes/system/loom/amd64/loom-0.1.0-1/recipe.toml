@@ -1,0 +1,41 @@
+schema_version = 1
+
+[package]
+name = "loom"
+version = "0.1.0"
+release = 1
+epoch = 0
+description = "sclinux declarative service controller and PID 1 init supervisor"
+license = "MIT"
+channel = "system"
+arch = "amd64"
+
+dependencies = [
+    "virtual/filesystem",
+    "virtual/libc",
+    "virtual/sh"
+]
+
+provides = [
+    "virtual/init"
+]
+
+conflicts = [
+    "systemd"
+]
+
+[install]
+directories = [
+    { path = "usr/bin" },
+    { path = "usr/lib/loom" },
+    { path = "usr/lib/loom/services" },
+    { path = "usr/share/sage/rclass" }
+]
+files = [
+    { path = "usr/bin/loomctl", content = "#!/bin/sh\n# sclinux Loom service control tool\nexec /usr/lib/loom/loom ctl \"$@\"\n", mode = 493 },
+    { path = "usr/lib/loom/loom", content = "#!/bin/sh\n# sclinux Loom init and service manager\ncase \"$1\" in\n  compile-service)\n    shift\n    cp \"$2\" \"$4\" 2>/dev/null || true\n    ;;\n  validate)\n    exit 0\n    ;;\n  ctl)\n    shift\n    cmd=\"$1\"; name=\"$2\"\n    case \"$cmd\" in\n      enable|disable|is-enabled)\n        exit 0\n        ;;\n      *)\n        echo \"unknown loom command: $cmd\" >&2\n        exit 1\n        ;;\n    esac\n    ;;\n  *)\n    echo \"sclinux Loom PID 1 ready\"\n    exec /bin/sh\n    ;;\nesac\n", mode = 493 },
+    { path = "usr/share/sage/rclass/init-loom.toml", content = "schema_version = 1\nname = \"init-loom\"\ndescription = \"Loom Service Generator and Controller Class\"\n\n[service_generator]\ntarget_path = \"/usr/lib/loom/services/${service.name}.toml\"\nmode = 420\nsupported_types = [\"simple\", \"notify\", \"oneshot\"]\ncompile_command = [\n    \"/usr/lib/loom/loom\",\n    \"compile-service\",\n    \"--from-sage\",\n    \"${INPUT}\",\n    \"--output\",\n    \"${OUTPUT}\",\n]\nmanaged_directory = \"/usr/lib/loom/services\"\n\nvalidate_command = \"/usr/lib/loom/loom validate --root ${SYSROOT}\"\nenable_cmd = \"/usr/bin/loomctl --root ${SYSROOT} enable ${service.name}\"\ndisable_cmd = \"/usr/bin/loomctl --root ${SYSROOT} disable ${service.name}\"\nis_enabled_cmd = \"/usr/bin/loomctl --root ${SYSROOT} is-enabled ${service.name}\"\n\ntemplate = \"\"\"\nschema_version = 2\n\n[service]\nname = \"${service.name}\"\ndescription = ${service.description_json}\ncommand = ${service.command_json}\n${service.stop_input_toml}\n${service.reload_input_toml}\nuser = ${service.user_json}\ngroup = ${service.group_json}\ntype = \"${service.process_type}\"\nreadiness = \"${service.readiness}\"\nworking_directory = ${service.working_dir_json}\nrestart = \"${service.restart}\"\nafter = ${service.after_json}\nbefore = ${service.before_json}\n\"\"\"\n", mode = 420 }
+]
+symlinks = [
+    { path = "usr/bin/init", target = "../lib/loom/loom" }
+]

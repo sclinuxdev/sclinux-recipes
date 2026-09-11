@@ -1,0 +1,42 @@
+schema_version = 1
+
+[package]
+name = "bc"
+version = "1.07.1"
+release = 1
+epoch = 0
+description = "Arbitrary precision numeric processing language"
+license = "GPL-3.0-or-later"
+channel = "system"
+arch = "amd64"
+
+dependencies = [
+    "virtual/libc",
+    "system/readline-libs >= 8.3-1"
+]
+
+[source]
+url = "https://ftp.gnu.org/gnu/bc/bc-1.07.1.tar.gz"
+sha256 = "62adfca89b0a1c0164c2cdca59ca210c1d44c3ffc46daf9931cf4942664cb02a"
+
+[build]
+inherit = ["custom"]
+
+dependencies = [
+    "system/readline-dev >= 8.3-1"
+]
+
+[build.args]
+compile_cmd = """cat << 'EOF' > bc/fix-libmath_h
+#!/bin/sh
+sed -e '1s/^/{"/; 2,$s/^/"/; s/$/",/' libmath.h | sed '$d' | sed '$s/",$/",0}/' > libmath.h.tmp && mv libmath.h.tmp libmath.h
+EOF
+chmod +x bc/fix-libmath_h && ./configure --prefix=/usr --with-readline && make -j${JOBS}"""
+install_cmd = """cat << 'EOF' > bc/fix-libmath_h
+#!/bin/sh
+sed -e '1s/^/{"/; 2,$s/^/"/; s/$/",/' libmath.h | sed '$d' | sed '$s/",$/",0}/' > libmath.h.tmp && mv libmath.h.tmp libmath.h
+EOF
+chmod +x bc/fix-libmath_h && ./configure --prefix=/usr --with-readline && make -j${JOBS} && make DESTDIR=${DESTDIR} install"""
+
+[build.payload]
+default = "remaining"

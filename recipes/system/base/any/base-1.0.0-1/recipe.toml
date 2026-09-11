@@ -1,0 +1,48 @@
+schema_version = 1
+
+[package]
+name = "base"
+version = "1.0.0"
+release = 1
+epoch = 0
+description = "sclinux minimal bootable base rootfs meta-package"
+license = "GPL-3.0-or-later"
+channel = "system"
+arch = "any"
+
+dependencies = [
+    "virtual/filesystem",
+    "virtual/os-release",
+    "virtual/libc",
+    "virtual/coreutils",
+    "virtual/sh",
+    "virtual/init",
+    "virtual/udev",
+    "system/kmod",
+    "system/util-linux",
+    "system/e2fsprogs",
+    "system/shadow",
+    "system/tar",
+    "system/xz",
+    "system/zstd",
+    "system/gzip",
+    "system/diffutils",
+    "system/findutils",
+    "system/which",
+    "system/sed",
+    "system/grep",
+    "virtual/awk",
+    "system/procps-ng",
+    "system/iproute2",
+    "system/dhcpcd",
+    "system/ca-certificates"
+]
+
+provides = [
+    "virtual/base"
+]
+
+[install]
+files = [
+    { path = "etc/sclinux-base-release", content = "sclinux Base System (rolling)\n" }
+]

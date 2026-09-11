@@ -1,0 +1,41 @@
+schema_version = 1
+
+[package]
+name = "pahole"
+version = "1.28"
+release = 1
+epoch = 0
+description = "BTF, DWARF and ELF inspection and manipulation tools"
+license = "GPL-2.0-only"
+channel = "system"
+arch = "amd64"
+
+dependencies = [
+    "virtual/libc",
+    "system/elfutils-libs >= 0.192-1",
+    "system/zlib-libs >= 1.3.1-1"
+]
+
+[[sources]]
+url = "https://git.kernel.org/pub/scm/devel/pahole/pahole.git/snapshot/pahole-1.28.tar.gz"
+sha256 = "9a319c214b38554be8430a672043d85735564e8e1e78db5a41cba7a03d038056"
+
+[[sources]]
+url = "https://github.com/libbpf/libbpf/archive/refs/tags/v1.5.0.tar.gz"
+sha256 = "53492aff6dd47e4da04ef5e672d753b9743848bdb38e9d90eafbe190b7983c44"
+destination = "lib/bpf"
+strip_components = 1
+
+[build]
+inherit = ["cmake"]
+
+dependencies = [
+    "system/libelf-dev",
+    "system/zlib-dev >= 1.3.1-1"
+]
+
+[build.args]
+cmake_args = "-D__LIB=lib -DCMAKE_INSTALL_PREFIX=/usr -DLIBBPF_EMBEDDED=ON"
+
+[build.payload]
+default = "remaining"

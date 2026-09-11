@@ -1,0 +1,65 @@
+schema_version = 1
+
+[package]
+name = "pam"
+version = "1.7.2"
+release = 1
+epoch = 0
+description = "Linux Pluggable Authentication Modules"
+license = "GPL-2.0-only"
+channel = "system"
+arch = "amd64"
+
+dependencies = [
+    "virtual/libc"
+]
+
+provides = [
+    "linux-pam",
+    "so:libpam.so.0",
+    "so:libpam_misc.so.0",
+    "so:libpamc.so.0"
+]
+
+[source]
+url = "https://github.com/linux-pam/linux-pam/releases/download/v1.7.2/Linux-PAM-1.7.2.tar.xz"
+sha256 = "3d86b6383fb5fd9eb9578d2cd47d92801191f4bf3f9bc61419bfefc8aa1e531a"
+
+[build]
+inherit = [
+    "meson"
+]
+
+dependencies = [
+    "virtual/libc-dev",
+    "gcc16/gcc:16",
+    "gcc16/gcc-dev:16",
+    "system/meson",
+    "system/ninja",
+    "system/pkgconf",
+    "system/flex"
+]
+
+[build.args]
+meson_args = "-Di18n=disabled -Ddocs=disabled -Daudit=disabled -Dlogind=disabled -Deconf=disabled -Dselinux=disabled -Dnis=disabled -Dopenssl=disabled -Dexamples=false -Dxtests=false"
+
+[build.payload]
+default = "remaining"
+
+[[subpackages]]
+name = "pam-dev"
+description = "Linux Pluggable Authentication Modules development files"
+license = "GPL-2.0-only"
+
+dependencies = [
+    "pam = 1.7.2-1"
+]
+
+[subpackages.payload]
+files = [
+    "usr/include/**",
+    "usr/lib/*.so",
+    "usr/lib/*.a",
+    "usr/lib/pkgconfig/**",
+    "usr/lib/cmake/**"
+]
