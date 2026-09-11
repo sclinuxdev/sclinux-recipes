@@ -171,3 +171,22 @@ recipes = [
     "recipes/security/pambase/any/pambase-1.0.0-1/recipe.toml",
     "recipes/security/polkit/amd64/polkit-127-1/recipe.toml"
 ]
+
+# Stage 13: firmware, CPU microcode, file identification, and text editor
+[[stages]]
+name = "stage13-hardware-and-editor"
+recipes = [
+    "recipes/system/hwdata/any/hwdata-0.409-1/recipe.toml",
+    "recipes/system/linux-firmware/any/linux-firmware-20260810-1/recipe.toml",
+    "recipes/system/intel-ucode/any/intel-ucode-20260812-1/recipe.toml",
+    "recipes/tools/file/amd64/file-5.48-1/recipe.toml",
+    "recipes/text/nano/amd64/nano-9.2-1/recipe.toml"
+]
+
+# Stage 14: pure Wayland compositor stack
+[[stages]]
+name = "stage14-wayland-compositor"
+recipes = [
+    "recipes/lib/wlroots/amd64/wlroots-0.20.2-1/recipe.toml",
+    "recipes/utils/sway/amd64/sway-1.12-1/recipe.toml"
+]

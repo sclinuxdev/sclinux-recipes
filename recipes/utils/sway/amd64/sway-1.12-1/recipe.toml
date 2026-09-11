@@ -1,0 +1,72 @@
+schema_version = 1
+
+[package]
+name = "sway"
+version = "1.12"
+release = 1
+epoch = 0
+description = "Tiling Wayland compositor and replacement for the i3 window manager"
+license = "MIT"
+channel = "system"
+arch = "amd64"
+
+dependencies = [
+    "virtual/libc",
+    "cairo",
+    "dbus",
+    "json-c",
+    "libevdev",
+    "libinput",
+    "pixman",
+    "libxkbcommon",
+    "pango",
+    "pcre2",
+    "seatd",
+    "systemd-libs",
+    "wayland",
+    "wlroots = 0.20.2-1",
+    "xkeyboard-config"
+]
+
+provides = [
+    "wayland-compositor"
+]
+
+[source]
+url = "https://github.com/swaywm/sway/releases/download/1.12/sway-1.12.tar.gz"
+sha256 = "a7b1becc217433c11c6284d36bcea0687b87b77b0ed26a384565292ec321f2b1"
+
+[build]
+inherit = ["meson"]
+
+dependencies = [
+    "virtual/libc-dev",
+    "gcc16/gcc:16",
+    "gcc16/gcc-dev:16",
+    "system/cairo-dev",
+    "system/json-c-dev",
+    "system/libdrm-dev",
+    "system/libevdev-dev",
+    "system/libinput-dev",
+    "system/libxkbcommon-dev",
+    "system/pango-dev",
+    "system/pcre2-dev",
+    "system/pixman-dev",
+    "system/systemd-dev",
+    "system/wayland-dev",
+    "system/wayland-protocols",
+    "system/wlroots-dev = 0.20.2-1"
+]
+
+[build.args]
+meson_args = "-Dsd-bus-provider=libsystemd -Dtray=enabled -Dgdk-pixbuf=disabled -Dman-pages=disabled -Db_ndebug=true"
+
+# The upstream config includes this drop-in when it is included from the
+# user's config. It keeps the systemd user manager and D-Bus activation aware
+# of the Wayland session environment.
+[[install.files]]
+path = "etc/sway/config.d/50-systemd-user.conf"
+content = "# sway does not set DISPLAY/WAYLAND_DISPLAY in the systemd user environment\n# See FS#63021\n# Adapted from xorg's 50-systemd-user.sh, which achieves a similar goal.\n\nexec systemctl --user import-environment DISPLAY WAYLAND_DISPLAY SWAYSOCK XDG_CURRENT_DESKTOP\nexec hash dbus-update-activation-environment 2>/dev/null && \\\n     dbus-update-activation-environment --systemd DISPLAY WAYLAND_DISPLAY SWAYSOCK XDG_CURRENT_DESKTOP\n"
+
+[build.payload]
+default = "remaining"

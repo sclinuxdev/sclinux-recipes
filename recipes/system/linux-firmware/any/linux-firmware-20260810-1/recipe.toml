@@ -1,0 +1,390 @@
+schema_version = 1
+
+[package]
+name = "linux-firmware"
+version = "20260810"
+release = 1
+epoch = 0
+description = "Firmware files for Linux hardware"
+license = "CC0-1.0"
+channel = "system"
+arch = "any"
+
+# Keep the meta package small while retaining the common desktop and laptop
+# device set. Server and SoC-specific firmware remains opt-in below.
+dependencies = [
+    "linux-firmware-amd = 20260810-1",
+    "linux-firmware-amdgpu = 20260810-1",
+    "linux-firmware-atheros = 20260810-1",
+    "linux-firmware-broadcom = 20260810-1",
+    "linux-firmware-cirrus = 20260810-1",
+    "linux-firmware-intel = 20260810-1",
+    "linux-firmware-mediatek = 20260810-1",
+    "linux-firmware-nvidia = 20260810-1",
+    "linux-firmware-other = 20260810-1",
+    "linux-firmware-radeon = 20260810-1",
+    "linux-firmware-realtek = 20260810-1",
+    "linux-firmware-ti = 20260810-1"
+]
+
+[source]
+url = "https://www.kernel.org/pub/linux/kernel/firmware/linux-firmware-20260810.tar.xz"
+sha256 = "ac17c34fe73756926a961fbafadf8d8f07a3bd2dd2f4ea31a0fb5d50c714a49a"
+
+[build]
+inherit = ["custom"]
+
+# linux-firmware is a data-only source. install-zst follows WHENCE, preserves
+# firmware links, and uses the kernel's supported Zstandard firmware format.
+dependencies = [
+    "system/cpio",
+    "system/coreutils",
+    "system/findutils",
+    "system/grep",
+    "system/make",
+    "system/sed",
+    "system/zstd"
+]
+
+[build.args]
+install_cmd = """
+set -eu
+
+mkdir -p kernel/x86/microcode
+cat amd-ucode/microcode_amd*.bin > kernel/x86/microcode/AuthenticAMD.bin
+if [ -n "${SOURCE_DATE_EPOCH:-}" ]; then
+    touch -d "@${SOURCE_DATE_EPOCH}" kernel/x86/microcode/AuthenticAMD.bin
+fi
+
+ZSTD_CLEVEL=19 make -j1 -C "${SRC_DIR}" FIRMWAREDIR="${DESTDIR}/usr/lib/firmware" install-zst
+
+# Build the early AMD microcode image without adding a host-only iucode tool
+# dependency. The kernel expects this cpio member name in the early image.
+mkdir -p "${DESTDIR}/boot"
+printf '%s\\0' kernel/x86/microcode/AuthenticAMD.bin | cpio --null --create --format=newc > "${DESTDIR}/boot/amd-ucode.img"
+
+# Keep all upstream license texts together; every firmware output depends on
+# linux-firmware-whence so its LicenseRef metadata remains available.
+install -d "${DESTDIR}/usr/share/licenses/linux-firmware-whence/LICENSES"
+install -m 0644 WHENCE "${DESTDIR}/usr/share/licenses/linux-firmware-whence/WHENCE"
+cp -a LICENSES/. "${DESTDIR}/usr/share/licenses/linux-firmware-whence/LICENSES/"
+"""
+
+[build.payload]
+default = "remaining"
+
+[[subpackages]]
+name = "linux-firmware-whence"
+description = "Linux firmware provenance and vendor license texts"
+license = "LicenseRef-WHENCE"
+
+[subpackages.payload]
+files = [
+    "usr/share/licenses/linux-firmware-whence/**"
+]
+
+[[subpackages]]
+name = "amd-ucode"
+description = "Early microcode update image for AMD CPUs"
+license = "LicenseRef-amd-ucode"
+dependencies = [
+    "linux-firmware-whence = 20260810-1"
+]
+
+[subpackages.payload]
+files = [
+    "boot/amd-ucode.img",
+    "usr/lib/firmware/amd-ucode/**"
+]
+
+[[subpackages]]
+name = "linux-firmware-amd"
+description = "Firmware for non-GPU AMD devices"
+license = "LicenseRef-amd"
+dependencies = [
+    "linux-firmware-whence = 20260810-1"
+]
+
+[subpackages.payload]
+files = [
+    "usr/lib/firmware/amd/**",
+    "usr/lib/firmware/amdnpu/**",
+    "usr/lib/firmware/amdtee/**"
+]
+
+[[subpackages]]
+name = "linux-firmware-amdgpu"
+description = "Firmware for AMD Radeon GPUs"
+license = "LicenseRef-amdgpu AND MIT"
+dependencies = [
+    "linux-firmware-whence = 20260810-1"
+]
+
+[subpackages.payload]
+files = [
+    "usr/lib/firmware/amdgpu/**"
+]
+
+[[subpackages]]
+name = "linux-firmware-atheros"
+description = "Firmware for Qualcomm Atheros Wi-Fi and Bluetooth adapters"
+license = "GPL-2.0-only AND LicenseRef-atheros"
+dependencies = [
+    "linux-firmware-whence = 20260810-1"
+]
+
+[subpackages.payload]
+files = [
+    "usr/lib/firmware/ar[0-9]*",
+    "usr/lib/firmware/ath*",
+    "usr/lib/firmware/ath*/**",
+    "usr/lib/firmware/carl9170*",
+    "usr/lib/firmware/htc_*",
+    "usr/lib/firmware/htc_*/**",
+    "usr/lib/firmware/qca/**",
+    "usr/lib/firmware/wil6210*",
+    "usr/lib/firmware/wil6210*/**"
+]
+
+[[subpackages]]
+name = "linux-firmware-broadcom"
+description = "Firmware for Broadcom and Cypress network adapters"
+license = "LicenseRef-broadcom"
+dependencies = [
+    "linux-firmware-whence = 20260810-1"
+]
+provides = [
+    "linux-firmware-bnx2x"
+]
+
+[subpackages.payload]
+files = [
+    "usr/lib/firmware/bnx2*",
+    "usr/lib/firmware/brcm/**",
+    "usr/lib/firmware/cypress/**",
+    "usr/lib/firmware/tigon/**"
+]
+
+[[subpackages]]
+name = "linux-firmware-cirrus"
+description = "Firmware for Cirrus Logic audio devices"
+license = "LicenseRef-cirrus"
+dependencies = [
+    "linux-firmware-whence = 20260810-1"
+]
+
+[subpackages.payload]
+files = [
+    "usr/lib/firmware/cirrus/**",
+    "usr/lib/firmware/cs42l43*",
+    "usr/lib/firmware/cs42l43*/**",
+    "usr/lib/firmware/sdca/**"
+]
+
+[[subpackages]]
+name = "linux-firmware-intel"
+description = "Firmware for Intel graphics, network, and platform devices"
+license = "Apache-2.0 AND GPL-2.0-only AND LicenseRef-intel"
+dependencies = [
+    "linux-firmware-whence = 20260810-1"
+]
+
+[subpackages.payload]
+files = [
+    "usr/lib/firmware/e100*",
+    "usr/lib/firmware/hfi1_*",
+    "usr/lib/firmware/hfi1_*/**",
+    "usr/lib/firmware/i915/**",
+    "usr/lib/firmware/intel/**",
+    "usr/lib/firmware/iwlwifi*",
+    "usr/lib/firmware/isci/**",
+    "usr/lib/firmware/ixp4xx/**",
+    "usr/lib/firmware/qat_*",
+    "usr/lib/firmware/qat_*/**",
+    "usr/lib/firmware/xe/**",
+    "usr/lib/firmware/*/ish"
+]
+
+[[subpackages]]
+name = "linux-firmware-liquidio"
+description = "Firmware for Cavium LiquidIO server adapters"
+license = "LicenseRef-liquidio"
+dependencies = [
+    "linux-firmware-whence = 20260810-1"
+]
+
+[subpackages.payload]
+files = [
+    "usr/lib/firmware/liquidio/**"
+]
+
+[[subpackages]]
+name = "linux-firmware-marvell"
+description = "Firmware for Marvell devices"
+license = "LicenseRef-marvell"
+dependencies = [
+    "linux-firmware-whence = 20260810-1"
+]
+
+[subpackages.payload]
+files = [
+    "usr/lib/firmware/libertas/**",
+    "usr/lib/firmware/mrvl/**",
+    "usr/lib/firmware/mwl8k/**",
+    "usr/lib/firmware/mwlwifi/**"
+]
+
+[[subpackages]]
+name = "linux-firmware-mediatek"
+description = "Firmware for MediaTek and Ralink devices"
+license = "LicenseRef-mediatek"
+dependencies = [
+    "linux-firmware-whence = 20260810-1"
+]
+
+[subpackages.payload]
+files = [
+    "usr/lib/firmware/mediatek/**",
+    "usr/lib/firmware/mt7*",
+    "usr/lib/firmware/rt[237]*"
+]
+
+[[subpackages]]
+name = "linux-firmware-mellanox"
+description = "Firmware for Mellanox devices"
+license = "LicenseRef-WHENCE"
+dependencies = [
+    "linux-firmware-whence = 20260810-1"
+]
+
+[subpackages.payload]
+files = [
+    "usr/lib/firmware/mellanox/**"
+]
+
+[[subpackages]]
+name = "linux-firmware-nfp"
+description = "Firmware for Netronome Flow Processors"
+license = "LicenseRef-netronome"
+dependencies = [
+    "linux-firmware-whence = 20260810-1"
+]
+
+[subpackages.payload]
+files = [
+    "usr/lib/firmware/netronome/**"
+]
+
+[[subpackages]]
+name = "linux-firmware-nvidia"
+description = "Firmware for NVIDIA GPUs and SoCs"
+license = "LicenseRef-nvidia"
+dependencies = [
+    "linux-firmware-whence = 20260810-1"
+]
+
+[subpackages.payload]
+files = [
+    "usr/lib/firmware/nvidia/**"
+]
+
+[[subpackages]]
+name = "linux-firmware-qcom"
+description = "Firmware for Qualcomm SoCs"
+license = "BSD-3-Clause AND LicenseRef-qcom"
+dependencies = [
+    "linux-firmware-atheros = 20260810-1",
+    "linux-firmware-whence = 20260810-1"
+]
+
+[subpackages.payload]
+files = [
+    "usr/lib/firmware/a300_*",
+    "usr/lib/firmware/a300_*/**",
+    "usr/lib/firmware/qcom/**"
+]
+
+[[subpackages]]
+name = "linux-firmware-qlogic"
+description = "Firmware for QLogic devices"
+license = "LicenseRef-qlogic"
+dependencies = [
+    "linux-firmware-whence = 20260810-1"
+]
+
+[subpackages.payload]
+files = [
+    "usr/lib/firmware/cbfw-*",
+    "usr/lib/firmware/qed/**",
+    "usr/lib/firmware/qlogic/**",
+    "usr/lib/firmware/ql2???_*"
+]
+
+[[subpackages]]
+name = "linux-firmware-radeon"
+description = "Firmware for ATI Radeon GPUs"
+license = "LicenseRef-radeon"
+dependencies = [
+    "linux-firmware-whence = 20260810-1"
+]
+
+[subpackages.payload]
+files = [
+    "usr/lib/firmware/radeon/**"
+]
+
+[[subpackages]]
+name = "linux-firmware-realtek"
+description = "Firmware for Realtek devices"
+license = "LicenseRef-realtek"
+dependencies = [
+    "linux-firmware-whence = 20260810-1"
+]
+
+[subpackages.payload]
+files = [
+    "usr/lib/firmware/realtek/**",
+    "usr/lib/firmware/rtl_*",
+    "usr/lib/firmware/rtl_*/**",
+    "usr/lib/firmware/rtlwifi/**",
+    "usr/lib/firmware/rtw8*",
+    "usr/lib/firmware/rtw8*/**"
+]
+
+[[subpackages]]
+name = "linux-firmware-ti"
+description = "Firmware for Texas Instruments devices"
+license = "GPL-2.0-or-later AND LicenseRef-ti"
+dependencies = [
+    "linux-firmware-whence = 20260810-1"
+]
+
+[subpackages.payload]
+files = [
+    "usr/lib/firmware/INT8*",
+    "usr/lib/firmware/TAS2*",
+    "usr/lib/firmware/TI*",
+    "usr/lib/firmware/TX*",
+    "usr/lib/firmware/????-*-0x?.*",
+    "usr/lib/firmware/ti/**",
+    "usr/lib/firmware/ti_*",
+    "usr/lib/firmware/ti_*/**",
+    "usr/lib/firmware/ti-connectivity/**",
+    "usr/lib/firmware/tas*",
+    "usr/lib/firmware/tas*/**"
+]
+
+[[subpackages]]
+name = "linux-firmware-other"
+description = "Unsorted firmware for devices without a dedicated vendor package"
+license = "LicenseRef-WHENCE"
+dependencies = [
+    "linux-firmware-whence = 20260810-1"
+]
+
+# This catch-all intentionally remains the final claim so every firmware file
+# is owned by a subpackage and the main output stays an empty meta package.
+[subpackages.payload]
+files = [
+    "usr/lib/firmware/**"
+]

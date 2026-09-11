@@ -1,0 +1,29 @@
+schema_version = 1
+
+[package]
+name = "hwdata"
+version = "0.409"
+release = 1
+epoch = 0
+description = "Hardware identification databases"
+license = "GPL-2.0-or-later"
+channel = "system"
+arch = "any"
+
+[[sources]]
+kind = "git"
+url = "https://github.com/vcrhonek/hwdata.git"
+commit = "ffe0fbfa49b059c1e008cff297e8cf9341110679"
+destination = "."
+
+[build]
+inherit = ["custom"]
+dependencies = [
+    "system/make"
+]
+
+[build.args]
+install_cmd = "./configure --prefix=/usr --disable-blacklist && make DESTDIR=\"${DESTDIR}\" install"
+
+[build.payload]
+default = "remaining"

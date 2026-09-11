@@ -1,0 +1,45 @@
+schema_version = 1
+
+[package]
+name = "nano"
+version = "9.2"
+release = 1
+epoch = 0
+description = "Small, friendly text editor"
+license = "GPL-3.0-or-later"
+channel = "system"
+arch = "amd64"
+
+dependencies = [
+    "virtual/libc",
+    "file",
+    "ncurses"
+]
+
+[source]
+url = "https://ftp.gnu.org/gnu/nano/nano-9.2.tar.xz"
+sha256 = "05ecb99247b782e8a5b3a25ed4101dd034b0236902f7449bc9795b717642f7e9"
+
+[build]
+inherit = ["custom"]
+
+dependencies = [
+    "virtual/libc-dev",
+    "gcc16/gcc:16",
+    "gcc16/gcc-dev:16",
+    "system/file",
+    "system/gettext",
+    "system/ncurses-dev"
+]
+
+[build.args]
+install_cmd = """
+set -eu
+./configure --prefix=/usr --sysconfdir=/etc --enable-utf8 --enable-libmagic
+make -j${JOBS}
+make DESTDIR="${DESTDIR}" install
+install -Dm644 doc/sample.nanorc "${DESTDIR}/etc/nanorc"
+"""
+
+[build.payload]
+default = "remaining"
