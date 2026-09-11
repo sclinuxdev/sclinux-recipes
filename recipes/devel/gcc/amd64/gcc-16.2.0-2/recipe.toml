@@ -1,0 +1,137 @@
+schema_version = 1
+
+[package]
+name = "gcc"
+version = "16.2.0"
+release = 2
+epoch = 0
+description = "The GNU Compiler Collection"
+license = "GPL-3.0-or-later AND LGPL-3.0-or-later"
+channel = "gcc16"
+slot = "16"
+arch = "amd64"
+
+dependencies = [
+    "system/glibc",
+    "system/binutils",
+    "system/gcc-libs:16 = 16.2.0-2",
+    "system/gmp-libs >= 6.3.0-1",
+    "system/mpfr-libs >= 4.2.2-1",
+    "system/mpc-libs >= 1.4.1-1",
+    "system/isl-libs >= 0.26-1",
+    "system/zlib-libs >= 1.3.1-1"
+]
+
+provides = [
+    "virtual/compiler",
+    "virtual/c-compiler",
+    "virtual/cxx-compiler"
+]
+
+[source]
+url = "https://mirrors.aliyun.com/gnu/gcc/gcc-16.2.0/gcc-16.2.0.tar.xz"
+sha256 = "e6738e29597f733270731aa90600f37ffdc045079dfc27ec7e8192cc81085c3e"
+
+[build]
+inherit = ["gcc"]
+
+[build.args]
+configure_args = "--disable-bootstrap"
+
+[build.payload]
+default = "remaining"
+
+[[subpackages]]
+name = "gcc-libs"
+description = "GNU Compiler Collection runtime shared libraries"
+license = "GPL-3.0-or-later WITH GCC-exception-3.1"
+channel = "system"
+slot = "16"
+
+dependencies = [
+    "virtual/libc"
+]
+
+provides = [
+    "so:libgcc_s.so.1",
+    "so:libstdc++.so.6",
+    "so:libgomp.so.1",
+    "so:libatomic.so.1"
+]
+
+[subpackages.payload]
+files = [
+    "usr/lib/libgcc_s.so*",
+    "usr/lib/libstdc++.so.6*",
+    "usr/lib/libgomp.so.1*",
+    "usr/lib/libatomic.so.1*",
+    "usr/lib/libquadmath.so.0*",
+    "usr/lib/libssp.so.0*",
+    "usr/lib/libasan.so.8*",
+    "usr/lib/libtsan.so.2*",
+    "usr/lib/libubsan.so.1*",
+    "usr/lib/libhwasan.so.0*",
+    "usr/lib/liblsan.so.0*",
+    "usr/lib/libitm.so.1*"
+]
+
+[[subpackages]]
+name = "gcc-dev"
+description = "GNU Compiler Collection development headers and static libraries"
+license = "GPL-3.0-or-later"
+channel = "gcc16"
+slot = "16"
+
+dependencies = [
+    "system/gcc-libs:16 = 16.2.0-2"
+]
+
+[subpackages.payload]
+files = [
+    "usr/include/c++/**",
+    "usr/lib/gcc/**",
+    "usr/lib/libstdc++.so",
+    "usr/lib/libstdc++*.a",
+    "usr/lib/libsupc++.a",
+    "usr/lib/libstdc++.la",
+    "usr/lib/libstdc++.modules.json",
+    "usr/lib/libstdc++.so.6.0.36-gdb.py",
+    "usr/lib/libgomp.so",
+    "usr/lib/libgomp*.a",
+    "usr/lib/libgomp.la",
+    "usr/lib/libgomp.spec",
+    "usr/lib/libatomic.so",
+    "usr/lib/libatomic*.a",
+    "usr/lib/libatomic.la",
+    "usr/lib/libquadmath.so",
+    "usr/lib/libquadmath*.a",
+    "usr/lib/libquadmath.la",
+    "usr/lib/libssp.so",
+    "usr/lib/libssp*.a",
+    "usr/lib/libssp.la",
+    "usr/lib/libasan.so",
+    "usr/lib/libasan*.a",
+    "usr/lib/libasan*.o",
+    "usr/lib/libasan.la",
+    "usr/lib/libtsan.so",
+    "usr/lib/libtsan*.a",
+    "usr/lib/libtsan*.o",
+    "usr/lib/libtsan.la",
+    "usr/lib/libubsan.so",
+    "usr/lib/libubsan*.a",
+    "usr/lib/libubsan.la",
+    "usr/lib/libhwasan.so",
+    "usr/lib/libhwasan*.a",
+    "usr/lib/libhwasan*.o",
+    "usr/lib/libhwasan.la",
+    "usr/lib/liblsan.so",
+    "usr/lib/liblsan*.a",
+    "usr/lib/liblsan*.o",
+    "usr/lib/liblsan.la",
+    "usr/lib/libitm.so",
+    "usr/lib/libitm*.a",
+    "usr/lib/libitm.la",
+    "usr/lib/libitm.spec",
+    "usr/lib/libsanitizer.spec",
+    "usr/lib/*.spec*"
+]
