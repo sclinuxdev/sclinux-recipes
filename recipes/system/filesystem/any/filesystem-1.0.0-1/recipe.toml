@@ -55,6 +55,7 @@ symlinks = [
     { path = "sbin", target = "usr/bin" },
     { path = "lib", target = "usr/lib" },
     { path = "lib64", target = "usr/lib" },
+    { path = "usr/lib64", target = "lib" },
     { path = "usr/sbin", target = "bin" }
 ]
 files = [
