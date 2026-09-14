@@ -3,7 +3,7 @@ schema_version = 1
 [package]
 name = "dbus"
 version = "1.16.2"
-release = 1
+release = 2
 epoch = 0
 description = "Message bus system and libdbus client library"
 license = "AFL-2.1 OR GPL-2.0-or-later"
@@ -49,6 +49,12 @@ configure_args = "--prefix=/usr --sysconfdir=/etc --localstatedir=/var --libexec
 
 [build.payload]
 default = "remaining"
+excludes = [
+    "usr/lib/systemd/system/dbus.service",
+    "usr/lib/systemd/system/dbus.socket",
+    "usr/lib/systemd/system/multi-user.target.wants/dbus.service",
+    "usr/lib/systemd/system/sockets.target.wants/dbus.socket"
+]
 
 [[sysusers]]
 name = "dbus"
@@ -61,7 +67,7 @@ description = "Message bus system and libdbus client library development files"
 license = "AFL-2.1 OR GPL-2.0-or-later"
 
 dependencies = [
-    "dbus = 1.16.2-1"
+    "dbus = 1.16.2-2"
 ]
 
 [subpackages.payload]

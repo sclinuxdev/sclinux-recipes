@@ -18,6 +18,7 @@ sclinux-recipes/
 │   └── MAINTENANCE_FACTS.md      # 依赖拓扑、冲突矩阵与解耦维护事实
 ├── templates/                    # 配方模板与规范速查
 │   ├── recipe.template.toml      # 完整配方声明模板
+│   ├── service.template.toml     # 跨 Init 服务与激活声明模板
 │   └── README.md                 # 打包与 SPDX 规范速查
 └── recipes/
     ├── devel/                    # 编译器、构建系统、调试器 (gcc, clang, cmake, binutils...)

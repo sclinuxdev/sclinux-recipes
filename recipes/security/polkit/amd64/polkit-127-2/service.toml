@@ -1,0 +1,23 @@
+schema_version = 1
+
+[service]
+name = "polkit"
+description = "Authorization manager"
+command = ["/usr/lib/polkit-1/polkitd", "--no-debug", "--log-level=notice"]
+stop_command = []
+reload_command = []
+user = "polkitd"
+group = "polkitd"
+working_dir = "/"
+pid_file = ""
+restart = "on-failure"
+type = "notify"
+after = ["dbus"]
+before = []
+runtime = ""
+
+[service.activation]
+kind = "dbus"
+name = "org.freedesktop.PolicyKit1"
+bus = "system"
+user = "root"

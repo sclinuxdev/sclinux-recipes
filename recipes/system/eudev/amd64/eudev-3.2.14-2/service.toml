@@ -1,0 +1,17 @@
+schema_version = 1
+
+[service]
+name = "eudev"
+description = "eudev device manager"
+command = ["/usr/sbin/udevd"]
+stop_command = ["/usr/bin/udevadm", "control", "--exit"]
+reload_command = ["/usr/bin/udevadm", "control", "--reload"]
+user = "root"
+group = "root"
+working_dir = "/"
+pid_file = ""
+restart = "on-failure"
+type = "simple"
+after = []
+before = []
+runtime = ""

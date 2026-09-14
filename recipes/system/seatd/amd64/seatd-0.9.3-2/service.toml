@@ -1,0 +1,17 @@
+schema_version = 1
+
+[service]
+name = "seatd"
+description = "Seat management daemon"
+command = ["/usr/bin/seatd", "-g", "seat"]
+stop_command = []
+reload_command = []
+user = "root"
+group = "root"
+working_dir = "/"
+pid_file = ""
+restart = "always"
+type = "simple"
+after = []
+before = []
+runtime = ""

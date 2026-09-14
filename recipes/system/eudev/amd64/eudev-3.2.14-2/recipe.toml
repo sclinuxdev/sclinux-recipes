@@ -3,7 +3,7 @@ schema_version = 1
 [package]
 name = "eudev"
 version = "3.2.14"
-release = 1
+release = 2
 epoch = 0
 description = "Standalone device management daemon and library"
 license = "GPL-2.0-or-later AND LGPL-2.1-or-later"
@@ -12,7 +12,7 @@ arch = "amd64"
 
 dependencies = [
     "virtual/libc",
-    "eudev-libs = 3.2.14-1",
+    "eudev-libs = 3.2.14-2",
     "kmod-libs >= 34.2-1"
 ]
 
@@ -62,7 +62,7 @@ description = "eudev device management development headers and pkgconfig files"
 license = "LGPL-2.1-or-later"
 
 dependencies = [
-    "eudev-libs = 3.2.14-1"
+    "eudev-libs = 3.2.14-2"
 ]
 
 [subpackages.payload]

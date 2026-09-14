@@ -3,7 +3,7 @@ schema_version = 1
 [package]
 name = "dhcpcd"
 version = "10.5.2"
-release = 1
+release = 2
 epoch = 0
 description = "Basic RFC2131 compliant DHCP client daemon"
 license = "BSD-2-Clause"
@@ -26,7 +26,12 @@ sha256 = "3e476657fdb6eeb38b277da3a48d0ac0113ecce5858ebdcddff2b629faed52b4"
 inherit = ["custom"]
 
 [build.args]
-install_cmd = './configure --prefix=/usr --sysconfdir=/etc --rundir=/run --dbdir=/var/lib/dhcpcd && make -j${JOBS} CFLAGS="${CFLAGS} -D_GNU_SOURCE" && make DESTDIR=${DESTDIR} install'
+install_cmd = './configure --prefix=/usr --sysconfdir=/etc --rundir=/run --dbdir=/var/lib/dhcpcd --privsepuser=dhcpcd && make -j${JOBS} CFLAGS="${CFLAGS} -D_GNU_SOURCE" && make DESTDIR=${DESTDIR} install'
 
 [build.payload]
 default = "remaining"
+
+[[sysusers]]
+name = "dhcpcd"
+type = "user"
+description = "dhcpcd privilege separation user"

@@ -41,3 +41,18 @@ recipes/<category>/<pkgname>/<arch>/<pkgname>-<version>-<release>/
     └── 0002-adjust-install-prefix.patch
 ```
 补丁需保持单一职责与标准 Unified Diff 格式 (`diff -u` / `git format-patch`)。
+
+## 5. 服务定义与激活
+
+守护进程在配方同目录使用 `service.toml`，模板见
+`templates/service.template.toml`。服务进程、激活入口和系统启用策略严格
+分离：
+
+- 缺省 `kind = "service"`：由 `/etc/sage/services.toml` 决定是否开机启用。
+- `kind = "socket"`：systemd 生成 `.service + .socket`，Loom 编译为带
+  `sd-listen-fds` 契约的服务图；启用逻辑服务时实际启用 listener。
+- `kind = "dbus"`：重建时生成 system-bus activation descriptor，安装后
+  自动按需可用，不得加入 `services.toml` 的 `enabled` 或 `disabled`。
+
+存在 `service.toml` 时，配方必须从 payload 中排除会与 Sage 生成路径冲突的
+上游 systemd unit、socket 和 D-Bus activation 文件。

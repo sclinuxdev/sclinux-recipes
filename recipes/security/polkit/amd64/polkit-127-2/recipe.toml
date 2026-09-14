@@ -3,7 +3,7 @@ schema_version = 1
 [package]
 name = "polkit"
 version = "127"
-release = 1
+release = 2
 epoch = 0
 description = "Authorization framework for controlling privileged operations"
 license = "LGPL-2.0-or-later"
@@ -49,6 +49,10 @@ meson_args = "-Dsession_tracking=logind -Dauthfw=pam -Dintrospection=false -Dgtk
 
 [build.payload]
 default = "remaining"
+excludes = [
+    "usr/lib/systemd/system/polkit.service",
+    "usr/share/dbus-1/system-services/org.freedesktop.PolicyKit1.service"
+]
 
 [[sysusers]]
 name = "polkitd"

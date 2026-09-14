@@ -1,0 +1,40 @@
+schema_version = 1
+
+[service]
+name = "dbus"
+description = "D-Bus system message bus"
+command = [
+    "/usr/bin/dbus-daemon",
+    "--system",
+    "--address=systemd:",
+    "--nofork",
+    "--nopidfile",
+    "--syslog-only",
+]
+stop_command = []
+reload_command = [
+    "/usr/bin/dbus-send",
+    "--print-reply",
+    "--system",
+    "--type=method_call",
+    "--dest=org.freedesktop.DBus",
+    "/",
+    "org.freedesktop.DBus.ReloadConfig",
+]
+# The system bus starts privileged and drops to the account selected by
+# system.conf after initialization.
+user = "root"
+group = "root"
+working_dir = "/"
+pid_file = ""
+restart = "on-failure"
+type = "notify"
+after = []
+before = ["polkit"]
+runtime = ""
+
+[service.activation]
+kind = "socket"
+listen_stream = "/run/dbus/system_bus_socket"
+accept = false
+mode = 438

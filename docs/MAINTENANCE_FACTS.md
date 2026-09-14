@@ -89,6 +89,23 @@ SCLinux 明确隔离了两套开箱即用的系统运行时生态：
 | **会话管理 (`virtual/logind`)** | `systemd-logind` | 无 (标准 PAM/agetty) |
 | **互斥声明 (`conflicts`)** | `conflicts = ["loom", "eudev"]` | `conflicts = ["systemd", "systemd-udev"]` |
 
+### 3.4 Cross-init service activation
+
+Sage separates the daemon process, its activation contract, and the system boot
+policy. Packages carry init-independent `service.toml` declarations; the selected
+init rclass owns all generated native files.
+
+| Activation | systemd | Loom | Boot policy |
+| :--- | :--- | :--- | :--- |
+| Direct service | `<name>.service` | Compiled Loom service node | Logical name in `/etc/sage/services.toml` |
+| UNIX socket | `<name>.service` plus `<name>.socket` | Loom socket node using the `sd-listen-fds` ABI | Logical name enables the listener |
+| System D-Bus | Process unit plus generated activation descriptor | Loom process definition plus the same portable descriptor | Automatically available after rebuild; never listed as enabled/disabled |
+
+This activation portability does not imply that every daemon has portable
+session semantics. In particular, the current polkit build selects logind session
+tracking; a Loom desktop still needs a compatible `org.freedesktop.login1`
+provider (or a separate polkit build using another supported session tracker).
+
 **双层拦截保护**：
 - **第一道防线（PubGrub 求解器）**：在用户于 `/etc/sage/system.toml` 声明配置时，求解器在内存推导阶段命中互斥规则，直接驳回并输出因果树，零磁盘开销。
 - **第二道防线（LMDB 预检状态机）**：在事务落地前，LMDB 全局文件反向所有权索引捕获 `/sbin/init`、`/usr/bin/udevadm`、`/usr/lib/libudev.so.1` 的路径碰撞，触发 Fail-Closed 原子回滚。

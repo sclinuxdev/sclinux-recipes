@@ -1,0 +1,38 @@
+# SCLinux init-independent service declaration (Schema v1)
+
+schema_version = 1
+
+[service]
+name = "exampled"
+description = "Example daemon"
+command = ["/usr/bin/exampled", "--foreground"]
+stop_command = []
+reload_command = []
+user = "exampled"
+group = "exampled"
+working_dir = "/"
+pid_file = ""
+restart = "on-failure"
+type = "simple"
+after = ["network"]
+before = []
+runtime = ""
+
+# Omit this table for a directly enabled service. Select exactly one contract.
+[service.activation]
+kind = "service"
+
+# Socket-activated alternative:
+# [service.activation]
+# kind = "socket"
+# listen_stream = "/run/exampled.sock"
+# accept = false
+# mode = 438 # 0666
+
+# System D-Bus-activated alternative. This is automatically available while
+# installed and must not be listed in /etc/sage/services.toml.
+# [service.activation]
+# kind = "dbus"
+# name = "org.example.Daemon"
+# bus = "system"
+# user = "root"

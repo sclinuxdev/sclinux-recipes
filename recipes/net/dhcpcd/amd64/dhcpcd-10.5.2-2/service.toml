@@ -1,0 +1,17 @@
+schema_version = 1
+
+[service]
+name = "dhcpcd"
+description = "DHCP client daemon"
+command = ["/usr/sbin/dhcpcd", "--nobackground"]
+stop_command = ["/usr/sbin/dhcpcd", "--exit"]
+reload_command = ["/usr/sbin/dhcpcd", "--rebind"]
+user = "root"
+group = "root"
+working_dir = "/"
+pid_file = ""
+restart = "on-failure"
+type = "simple"
+after = []
+before = []
+runtime = ""

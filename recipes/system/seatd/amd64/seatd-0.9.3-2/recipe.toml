@@ -3,7 +3,7 @@ schema_version = 1
 [package]
 name = "seatd"
 version = "0.9.3"
-release = 1
+release = 2
 epoch = 0
 description = "Seat management daemon and libseat client library"
 license = "MIT"
@@ -41,6 +41,9 @@ meson_args = "-Dserver=enabled -Dlibseat=enabled -Dman-pages=disabled"
 
 [build.payload]
 default = "remaining"
+excludes = [
+    "usr/lib/systemd/system/seatd.service"
+]
 
 [[sysusers]]
 name = "seat"
@@ -58,7 +61,7 @@ description = "Seat management daemon and libseat client library development fil
 license = "MIT"
 
 dependencies = [
-    "seatd = 0.9.3-1"
+    "seatd = 0.9.3-2"
 ]
 
 [subpackages.payload]

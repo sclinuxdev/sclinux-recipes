@@ -106,9 +106,9 @@ recipes = [
     "recipes/system/kmod/amd64/kmod-34.2-1/recipe.toml",
     "recipes/utils/procps-ng/amd64/procps-ng-4.0.6-1/recipe.toml",
     "recipes/net/iproute2/amd64/iproute2-7.2.0-1/recipe.toml",
-    "recipes/net/dhcpcd/amd64/dhcpcd-10.5.2-1/recipe.toml",
+    "recipes/net/dhcpcd/amd64/dhcpcd-10.5.2-2/recipe.toml",
     "recipes/security/pam/amd64/pam-1.7.2-1/recipe.toml",
-    "recipes/system/systemd/amd64/systemd-261.2-2/recipe.toml",
+    "recipes/system/systemd/amd64/systemd-261.2-3/recipe.toml",
     "recipes/system/linux-zen/amd64/linux-zen-7.2.4-1/recipe.toml",
     "recipes/utils/fastfetch/amd64/fastfetch-2.68.1-1/recipe.toml"
 ]
@@ -130,7 +130,7 @@ recipes = [
     "recipes/lib/json-c/amd64/json-c-0.19-1/recipe.toml",
     "recipes/lib/libpng/amd64/libpng-1.6.58-1/recipe.toml",
     "recipes/lib/duktape/amd64/duktape-2.7.0-1/recipe.toml",
-    "recipes/system/dbus/amd64/dbus-1.16.2-1/recipe.toml"
+    "recipes/system/dbus/amd64/dbus-1.16.2-2/recipe.toml"
 ]
 
 # 阶段 10: 字体与文本渲染栈
@@ -161,7 +161,7 @@ recipes = [
     "recipes/lib/libevdev/amd64/libevdev-1.13.7-1/recipe.toml",
     "recipes/lib/mtdev/amd64/mtdev-1.1.7-1/recipe.toml",
     "recipes/lib/libinput/amd64/libinput-1.31.3-1/recipe.toml",
-    "recipes/system/seatd/amd64/seatd-0.9.3-1/recipe.toml"
+    "recipes/system/seatd/amd64/seatd-0.9.3-2/recipe.toml"
 ]
 
 # 阶段 12: PAM 策略与授权服务
@@ -169,7 +169,7 @@ recipes = [
 name = "stage12-policy"
 recipes = [
     "recipes/security/pambase/any/pambase-1.0.0-1/recipe.toml",
-    "recipes/security/polkit/amd64/polkit-127-1/recipe.toml"
+    "recipes/security/polkit/amd64/polkit-127-2/recipe.toml"
 ]
 
 # Stage 13: firmware, CPU microcode, file identification, and text editor
